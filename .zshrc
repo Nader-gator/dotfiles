@@ -94,10 +94,13 @@ fi
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 alias be="bundle exec"
 alias cs="cd ~/Code_stuff"
-alias desktop="cd ~/Desktop"
+alias dt="cd ~/Desktop"
+alias dl="cd ~/Downloads"
 alias ovim="command vim"
 alias python=python3
 alias python2="command python"
 alias pip=pip3
 alias pip2="command pip"
 alias vim=nvim
+alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+
