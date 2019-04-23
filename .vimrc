@@ -20,10 +20,14 @@ Plug 'vimlab/split-term.vim'
 Plug 'luochen1990/rainbow'
 call plug#end()
 
+set mouse=a
 
 
 set splitbelow
 set splitright
+
+set fileignorecase
+set wildignorecase
 
 " color theme
 if (empty($TMUX))
@@ -36,7 +40,7 @@ if (empty($TMUX))
 endif
 
 " colors
-syntax on
+syntax on 
 colorscheme onedark
 highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
@@ -121,3 +125,9 @@ nmap <A-l> <C-w>l
 
 "OUT OUT OUT
 nmap Q :q<cr>
+
+"clipboard
+set clipboard=unnamed 
+
+let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
