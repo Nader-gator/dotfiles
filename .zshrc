@@ -102,6 +102,8 @@ alias pip=pip3
 alias pip2="command pip"
 alias vim=nvim
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
+alias ls='python ~/Code_stuff/lsicons.py'
+alias lls='command ls'
 
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh

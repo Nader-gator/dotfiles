@@ -1,70 +1,98 @@
 " vim:fdm=marker
+" Install plugin manager if it doesnt exist {{{
 if empty(glob('~/.vim/autoload/plug.vim'))
   silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs
     \ https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
+" }}}
 " Plugins {{{
 call plug#begin()
+
+" UI
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
-Plug 'tpope/vim-sensible'
-Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
-Plug 'junegunn/fzf.vim'
+Plug 'mhinz/vim-startify'
+
+" syntax and autofill
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 Plug 'w0rp/ale'
-Plug 'scrooloose/nerdcommenter'
 Plug 'Nader-gator/vim-polyglot'
-Plug 'joshdick/onedark.vim'
-Plug 'cohama/lexima.vim'
-Plug 'SirVer/ultisnips'
-Plug 'vimlab/split-term.vim'
 Plug 'luochen1990/rainbow'
-Plug 'easymotion/vim-easymotion'
+Plug 'andymass/vim-matchup'
+
+" Themses and visual
+Plug 'joshdick/onedark.vim'
 Plug 'ryanoasis/vim-devicons'
 Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
-Plug 'Galooshi/vim-import-js'
 Plug 'Yggdroot/indentLine'
-Plug 'airblade/vim-gitgutter'
-Plug 'tpope/vim-surround'
-Plug 'mhinz/vim-startify'
-Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
+Plug 'vim-airline/vim-airline'
+
+" Motion and navigation
+Plug 'easymotion/vim-easymotion'
+
+" ease of use
+Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+Plug 'junegunn/fzf.vim'
+Plug 'scrooloose/nerdcommenter'
+Plug 'vimlab/split-term.vim'
+Plug 'Galooshi/vim-import-js'
+Plug 'tpope/vim-surround'
+Plug 'gu-fan/colorv.vim'
+Plug 'vim-scripts/LineJuggler'
+Plug 'inkarkat/vim-ingo-library'
+Plug 'tpope/vim-eunuch'
+
+" invisible help
+Plug 'cohama/lexima.vim'
+Plug 'tpope/vim-sensible'
+
+" Git
+Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
 call plug#end()
 " }}}
-" FZF WITH DEVICON {{{
-nnoremap <silent> <leader>fe :call Fzf_dev()<CR>
-function! Fzf_dev()
-  let l:fzf_files_options = '--preview "rougify {2..-1} | head -'.&lines.'"'
+" FZF optiona and DEVICON function {{{
+"let g:fzf_files_options = '--preview "rougify {} | head -'.&lines.'"'
+let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+let g:fzf_action = {
+  \ 'ctrl-t': 'tab split',
+  \ 'ctrl-h': 'split',
+  \ 'ctrl-v': 'vsplit' }
 
-  function! s:files()
-    let l:files = split(system($FZF_DEFAULT_COMMAND), '\n')
-    return s:prepend_icon(l:files)
-  endfunction
-
-  function! s:prepend_icon(candidates)
-    let l:result = []
-    for l:candidate in a:candidates
-      let l:filename = fnamemodify(l:candidate, ':p:t')
-      let l:icon = WebDevIconsGetFileTypeSymbol(l:filename, isdirectory(l:filename))
-      call add(l:result, printf('%s %s', l:icon, l:candidate))
-    endfor
-
-    return l:result
-  endfunction
-
-  function! s:edit_file(item)
-    let l:pos = stridx(a:item, ' ')
-    let l:file_path = a:item[pos+1:-1]
+function! Fzf_files_with_dev_icons(command)
+   let l:fzf_files_options = '--preview "bat --color always --style numbers {2..} | head -'.&lines.'"'
+   function! s:edit_devicon_prepended_file(item)
+    let l:file_path = a:item[4:-1]
     execute 'silent e' l:file_path
   endfunction
-
-  call fzf#run({
-        \ 'source': <sid>files(),
-        \ 'sink':   function('s:edit_file'),
+   call fzf#run({
+        \ 'source': a:command.' | devicon-lookup',
+        \ 'sink':   function('s:edit_devicon_prepended_file'),
         \ 'options': '-m ' . l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
+ function! Fzf_git_diff_files_with_dev_icons()
+  let l:fzf_files_options = '--ansi --preview "sh -c \"(git diff --color=always -- {3..} | sed 1,4d; bat --color always --style numbers {3..}) | head -'.&lines.'\""'
+   function! s:edit_devicon_prepended_file_diff(item)
+    echom a:item
+    let l:file_path = a:item[7:-1]
+    echom l:file_path
+    let l:first_diff_line_number = system("git diff -U0 ".l:file_path." | rg '^@@.*\+' -o | rg '[0-9]+' -o | head -1")
+     execute 'silent e' l:file_path
+    execute l:first_diff_line_number
+  endfunction
+   call fzf#run({
+        \ 'source': 'git -c color.status=always status --short --untracked-files=all | devicon-lookup',
+        \ 'sink':   function('s:edit_devicon_prepended_file_diff'),
+        \ 'options': '-m ' . l:fzf_files_options,
+        \ 'down':    '40%' })
+endfunction
+ " Open fzf Files " Open fzf Files
+nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND)<CR>
+"map <C-d> :call Fzf_git_diff_files_with_dev_icons()<CR>
+"map <C-g> :call Fzf_files_with_dev_icons("git ls-files \| uniq")<CR>
 " }}}
 " airline {{{
 function! WindowNumber(...)
@@ -85,12 +113,29 @@ while i <= 9
     let i = i + 1
 endwhile
 " }}}
+" COC instal script {{{
+"
+"CocInstall coc-json coc-tsserver coc-html woc-css coc-vetur coc-phpls coc-java coc-solargraph coc-rls coc-yaml coc-python coc-highlight coc-emmet coc-snippets 
+"}}} 
+" functions {{{
+function s:MKDir(...)
+    if         !a:0 
+           \|| isdirectory(a:1)
+           \|| filereadable(a:1)
+           \|| isdirectory(fnamemodify(a:1, ':p:h'))
+        return
+    endif
+    return mkdir(fnamemodify(a:1, ':p:h'), 'p')
+endfunction
+command -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
+"}}}
 
 set splitbelow
 set splitright
 set mouse=a
 set fileignorecase
 set wildignorecase
+
 
 " color theme
 if (empty($TMUX))
@@ -108,7 +153,6 @@ colorscheme onedark
 highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
 
-
 "git gutter
 set updatetime=100
 nmap <Leader>gd <Plug>GitGutterPreviewHunk
@@ -123,12 +167,9 @@ let g:indentLine_leadingSpaceChar = '·'
 
 "tabs
 filetype plugin indent on
-" On pressing tab, insert 2 spaces
 set expandtab
-" show existing tab with 2 spaces width
 set tabstop=2
 set softtabstop=2
-" when indenting with '>', use 2 spaces width
 set shiftwidth=2
 
 "line number
@@ -140,8 +181,8 @@ set shiftwidth=2
 :augroup END
 
 "___1___Fuzzy finder
-nmap <leader>ff :Files<cr>|    " fuzzy find files in the working directory (where you launched Vim from)
-nmap <leader>fl :BLines<cr>|   " fuzzy find lines in the current file
+nmap <C-f> :Files<cr>|    " fuzzy find files in the working directory (where you launched Vim from)
+nmap <leader>fl :Lines<cr>|   " fuzzy find lines in the current file
 nmap <leader>fb :Buffers<cr>|  " fuzzy find an open buffer
 nmap <leader>ft :Tags<cr>|     " fuzzy find text in the working directory
 nmap <leader>fc :Commands<cr>| " fuzzy find Vim commands (like Ctrl-Shift-P in Sublime/Atom/VSC)
@@ -152,6 +193,8 @@ nmap <leader>dn :ALEGoToDefinition<cr>|          " Open the definition of the sy
 nmap <leader>dt :ALEGoToDefinitionInTab<cr>|    " The same, but for opening the file in a new tab.
 nmap <leader>dh :ALEGoToDefinitionInSplit<cr>|  " The same, but in a new split.
 nmap <leader>dv :ALEGoToDefinitionInVSplit<cr>| " The same, but in a new vertical split.
+let g:ale_fixers = ['prettier','remove_trailing_lines', 'trim_whitespace']
+let g:ale_fix_on_save = 1
 
 "hover info
 nmap <leader>hov :ALEHover<cr>| " The same, but in a new vertical split.
@@ -173,21 +216,10 @@ inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
 inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
 
 "TODO script to install lang servers
-" lightline
 " add script for opening vimrc in directory
-" add nerdtree left right keys
-
-"create new file and directory
-function s:MKDir(...)
-    if         !a:0 
-           \|| isdirectory(a:1)
-           \|| filereadable(a:1)
-           \|| isdirectory(fnamemodify(a:1, ':p:h'))
-        return
-    endif
-    return mkdir(fnamemodify(a:1, ':p:h'), 'p')
-endfunction
-command -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
+" add rougify gem script
+" add rust devicon-lookup
+" add rust bat 
 
 " shortcut to make new file
 nmap <C-n> :E 
@@ -199,6 +231,7 @@ nmap <leader>th :Term<cr>
 nmap <leader>tv :VTerm<cr>
 nmap <leader>tt :TTerm<cr>
 nmap <leader>tn :terminal<cr>
+
 "easier term movement
 nmap <A-h> <C-w>h
 nmap <A-j> <C-w>j
@@ -207,20 +240,29 @@ nmap <A-l> <C-w>l
 
 "OUT OUT OUT
 nmap Q :q<cr>
+nmap W :w<cr>
 
 "clipboard
 set clipboard=unnamed 
 
-let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
-let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
 "easymotion
 nmap <leader>w <Plug>(easymotion-bd-w)
+let g:EasyMotion_keys='rgfnvhgut'
 
 "copy pasting
-nnoremap y "ay
-nnoremap p "ap
-nnoremap <leader>p p
+nnoremap d "ad
+nnoremap <leader>p "ap
 
 "canceling importjs
 nmap <leader>g g
+
+"moving lines
+nmap <A-d> [e
+nmap <A-f> ]e
+
+"color edit
+nmap <leader>ec :ColorVEdit
+
+"newline
+imap <A-g> <esc>o
+
