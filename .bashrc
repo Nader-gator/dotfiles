@@ -20,3 +20,6 @@ export PATH="$PATH:$HOME/.rvm/bin"
 alias config='/usr/bin/git --git-dir=/Users/naderarbabian/.cfg/ --work-tree=/Users/naderarbabian'
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+# added by travis gem
+[ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh

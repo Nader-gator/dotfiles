@@ -30,6 +30,7 @@ Plug 'vim-airline/vim-airline'
 
 " Motion and navigation
 Plug 'easymotion/vim-easymotion'
+Plug 'terryma/vim-multiple-cursors'
 
 " ease of use
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -42,10 +43,13 @@ Plug 'gu-fan/colorv.vim'
 Plug 'vim-scripts/LineJuggler'
 Plug 'inkarkat/vim-ingo-library'
 Plug 'tpope/vim-eunuch'
+Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 
 " invisible help
 Plug 'cohama/lexima.vim'
 Plug 'tpope/vim-sensible'
+Plug 'alvan/vim-closetag'
+Plug 'mattn/emmet-vim'
 
 " Git
 Plug 'airblade/vim-gitgutter'
@@ -53,7 +57,6 @@ Plug 'tpope/vim-fugitive'
 call plug#end()
 " }}}
 " FZF optiona and DEVICON function {{{
-"let g:fzf_files_options = '--preview "rougify {} | head -'.&lines.'"'
 let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
 let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 let g:fzf_action = {
@@ -61,16 +64,21 @@ let g:fzf_action = {
   \ 'ctrl-h': 'split',
   \ 'ctrl-v': 'vsplit' }
 
-function! Fzf_files_with_dev_icons(command)
-   let l:fzf_files_options = '--preview "bat --color always --style numbers {2..} | head -'.&lines.'"'
+function! Fzf_files_with_dev_icons(default_command,optional)
+   "let l:fzf_files_options = '--preview "rougify {2..-1} | head -'.&lines.'"'
+    if a:optional == 1
+     let l:fzf_files_options = '--preview "bat --color always --style numbers {2..} | head -'.&lines.'"'
+    elseif a:optional == 0
+     let l:fzf_files_options = ''
+    endif
    function! s:edit_devicon_prepended_file(item)
     let l:file_path = a:item[4:-1]
     execute 'silent e' l:file_path
   endfunction
    call fzf#run({
-        \ 'source': a:command.' | devicon-lookup',
+        \ 'source': a:default_command.' | devicon-lookup',
         \ 'sink':   function('s:edit_devicon_prepended_file'),
-        \ 'options': '-m ' . l:fzf_files_options,
+        \ 'options': l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
  function! Fzf_git_diff_files_with_dev_icons()
@@ -90,7 +98,8 @@ endfunction
         \ 'down':    '40%' })
 endfunction
  " Open fzf Files " Open fzf Files
-nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND)<CR>
+nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
+nmap <leader>fp :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
 "map <C-d> :call Fzf_git_diff_files_with_dev_icons()<CR>
 "map <C-g> :call Fzf_files_with_dev_icons("git ls-files \| uniq")<CR>
 " }}}
@@ -115,11 +124,11 @@ endwhile
 " }}}
 " COC instal script {{{
 "
-"CocInstall coc-json coc-tsserver coc-html woc-css coc-vetur coc-phpls coc-java coc-solargraph coc-rls coc-yaml coc-python coc-highlight coc-emmet coc-snippets 
-"}}} 
+"CocInstall coc-json coc-tsserver coc-html woc-css coc-vetur coc-phpls coc-java coc-solargraph coc-rls coc-yaml coc-python coc-highlight coc-emmet coc-snippets
+"}}}
 " functions {{{
 function s:MKDir(...)
-    if         !a:0 
+    if         !a:0
            \|| isdirectory(a:1)
            \|| filereadable(a:1)
            \|| isdirectory(fnamemodify(a:1, ':p:h'))
@@ -128,6 +137,12 @@ function s:MKDir(...)
     return mkdir(fnamemodify(a:1, ':p:h'), 'p')
 endfunction
 command -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
+xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+
+function! ExecuteMacroOverVisualRange()
+  echo "@".getcmdline()
+  execute ":'<,'>normal @".nr2char(getchar())
+endfunction
 "}}}
 
 set splitbelow
@@ -148,7 +163,7 @@ if (empty($TMUX))
 endif
 
 " colors
-syntax on 
+syntax on
 colorscheme onedark
 highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
@@ -193,7 +208,12 @@ nmap <leader>dn :ALEGoToDefinition<cr>|          " Open the definition of the sy
 nmap <leader>dt :ALEGoToDefinitionInTab<cr>|    " The same, but for opening the file in a new tab.
 nmap <leader>dh :ALEGoToDefinitionInSplit<cr>|  " The same, but in a new split.
 nmap <leader>dv :ALEGoToDefinitionInVSplit<cr>| " The same, but in a new vertical split.
-let g:ale_fixers = ['prettier','remove_trailing_lines', 'trim_whitespace']
+"let g:ale_fixers = ['prettier','remove_trailing_lines', 'trim_whitespace','autopep8']
+let g:ale_fixers = {
+\   '*': ['prettier','remove_trailing_lines', 'trim_whitespace'],
+\   'javascript': ['eslint'],
+\   'python': ['yapf']
+\   }
 let g:ale_fix_on_save = 1
 
 "hover info
@@ -208,7 +228,7 @@ nmap <C-c> <Plug>NERDCommenterToggle
 "___4___NERDtree
 nmap <leader>nt :NERDTreeToggle<cr>
 let NERDTreeMapOpenSplit='h'
-let NERDTreeMapActivateNode='l' 
+let NERDTreeMapActivateNode='l'
 let NERDTreeMapOpenVSplit='v'
 
 "___5___COC
@@ -219,10 +239,9 @@ inoremap <expr> <C-k> pumvisible() ? "\<C-p>" : "\<C-k>"
 " add script for opening vimrc in directory
 " add rougify gem script
 " add rust devicon-lookup
-" add rust bat 
+" add rust bat
+" add prettier
 
-" shortcut to make new file
-nmap <C-n> :E 
 nnoremap <Space> :noh<cr>
 set ignorecase
 
@@ -243,11 +262,11 @@ nmap Q :q<cr>
 nmap W :w<cr>
 
 "clipboard
-set clipboard=unnamed 
+set clipboard=unnamed
 
 "easymotion
 nmap <leader>w <Plug>(easymotion-bd-w)
-let g:EasyMotion_keys='rgfnvhgut'
+let g:EasyMotion_keys='edcrfvtgbyhnujm'
 
 "copy pasting
 nnoremap d "ad
@@ -259,10 +278,14 @@ nmap <leader>g g
 "moving lines
 nmap <A-d> [e
 nmap <A-f> ]e
-
 "color edit
 nmap <leader>ec :ColorVEdit
 
 "newline
-imap <A-g> <esc>o
+imap <A-o> <esc>o
 
+"emmet
+let g:user_emmet_leader_key='-'
+
+"not hide tags in markdown
+let g:indentLine_fileTypeExclude = ['markdown']

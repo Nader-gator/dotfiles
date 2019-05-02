@@ -149,3 +149,7 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 source /Users/naderarbabian/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+#export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.7/site-packages"
+
+# added by travis gem
+[ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh
