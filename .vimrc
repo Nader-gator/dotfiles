@@ -27,6 +27,7 @@ Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'Yggdroot/indentLine'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-airline/vim-airline'
+Plug 'TaDaa/vimade'
 
 " Motion and navigation
 Plug 'easymotion/vim-easymotion'
@@ -44,6 +45,9 @@ Plug 'vim-scripts/LineJuggler'
 Plug 'inkarkat/vim-ingo-library'
 Plug 'tpope/vim-eunuch'
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
+Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
+Plug 'FooSoft/vim-argwrap'
+Plug 'junegunn/vim-easy-align'
 
 " invisible help
 Plug 'cohama/lexima.vim'
@@ -78,28 +82,31 @@ function! Fzf_files_with_dev_icons(default_command,optional)
    call fzf#run({
         \ 'source': a:default_command.' | devicon-lookup',
         \ 'sink':   function('s:edit_devicon_prepended_file'),
-        \ 'options': l:fzf_files_options,
-        \ 'down':    '40%' })
-endfunction
- function! Fzf_git_diff_files_with_dev_icons()
-  let l:fzf_files_options = '--ansi --preview "sh -c \"(git diff --color=always -- {3..} | sed 1,4d; bat --color always --style numbers {3..}) | head -'.&lines.'\""'
-   function! s:edit_devicon_prepended_file_diff(item)
-    echom a:item
-    let l:file_path = a:item[7:-1]
-    echom l:file_path
-    let l:first_diff_line_number = system("git diff -U0 ".l:file_path." | rg '^@@.*\+' -o | rg '[0-9]+' -o | head -1")
-     execute 'silent e' l:file_path
-    execute l:first_diff_line_number
-  endfunction
-   call fzf#run({
-        \ 'source': 'git -c color.status=always status --short --untracked-files=all | devicon-lookup',
-        \ 'sink':   function('s:edit_devicon_prepended_file_diff'),
         \ 'options': '-m ' . l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
+nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
+nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
+
+" git diff {{{
+ "function! Fzf_git_diff_files_with_dev_icons()
+  "let l:fzf_files_options = '--ansi --preview "sh -c \"(git diff --color=always -- {3..} | sed 1,4d; bat --color always --style numbers {3..}) | head -'.&lines.'\""'
+   "function! s:edit_devicon_prepended_file_diff(item)
+    "echom a:item
+    "let l:file_path = a:item[7:-1]
+    "echom l:file_path
+    "let l:first_diff_line_number = system("git diff -U0 ".l:file_path." | rg '^@@.*\+' -o | rg '[0-9]+' -o | head -1")
+     "execute 'silent e' l:file_path
+    "execute l:first_diff_line_number
+  "endfunction
+   "call fzf#run({
+        "\ 'source': 'git -c color.status=always status --short --untracked-files=all | devicon-lookup',
+        "\ 'sink':   function('s:edit_devicon_prepended_file_diff'),
+        "\ 'options': '-m ' . l:fzf_files_options,
+        "\ 'down':    '40%' })
+"endfunction
+" }}}
  " Open fzf Files " Open fzf Files
-nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
-nmap <leader>fp :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
 "map <C-d> :call Fzf_git_diff_files_with_dev_icons()<CR>
 "map <C-g> :call Fzf_files_with_dev_icons("git ls-files \| uniq")<CR>
 " }}}
@@ -167,6 +174,8 @@ syntax on
 colorscheme onedark
 highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
+set colorcolumn=80
+
 
 "git gutter
 set updatetime=100
@@ -195,6 +204,11 @@ set shiftwidth=2
 :autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
 :augroup END
 
+"LatexPreview options
+autocmd Filetype tex setl updatetime=1
+"let g:livepreview_previewer = 'open -a Preview'
+nmap <leader>ltx :LLPStartPreview<cr>
+
 "___1___Fuzzy finder
 nmap <C-f> :Files<cr>|    " fuzzy find files in the working directory (where you launched Vim from)
 nmap <leader>fl :Lines<cr>|   " fuzzy find lines in the current file
@@ -211,9 +225,11 @@ nmap <leader>dv :ALEGoToDefinitionInVSplit<cr>| " The same, but in a new vertica
 "let g:ale_fixers = ['prettier','remove_trailing_lines', 'trim_whitespace','autopep8']
 let g:ale_fixers = {
 \   '*': ['prettier','remove_trailing_lines', 'trim_whitespace'],
-\   'javascript': ['eslint'],
-\   'python': ['yapf']
+\   'javascript': ['eslint','prettier'],
+\   'python': ['yapf'],
+\   'ruby': ['standardrb']
 \   }
+let g:ale_linters = {'ruby': ['standardrb']}
 let g:ale_fix_on_save = 1
 
 "hover info
@@ -265,7 +281,7 @@ nmap W :w<cr>
 set clipboard=unnamed
 
 "easymotion
-nmap <leader>w <Plug>(easymotion-bd-w)
+nmap <leader>q <Plug>(easymotion-bd-w)
 let g:EasyMotion_keys='edcrfvtgbyhnujm'
 
 "copy pasting
@@ -289,3 +305,10 @@ let g:user_emmet_leader_key='-'
 
 "not hide tags in markdown
 let g:indentLine_fileTypeExclude = ['markdown']
+
+" arg wrap
+nnoremap <leader>w :ArgWrap<CR>
+
+"easy align
+xmap ga <Plug>(EasyAlign)
+nmap ga <Plug>(EasyAlign)
