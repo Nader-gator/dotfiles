@@ -85,8 +85,8 @@ function! Fzf_files_with_dev_icons(default_command,optional)
         \ 'options': '-m ' . l:fzf_files_options,
         \ 'down':    '40%' })
 endfunction
-nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
-nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
+nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
+nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
 
 " git diff {{{
  "function! Fzf_git_diff_files_with_dev_icons()
@@ -205,8 +205,8 @@ set shiftwidth=2
 :augroup END
 
 "LatexPreview options
-autocmd Filetype tex setl updatetime=1
-"let g:livepreview_previewer = 'open -a Preview'
+autocmd Filetype tex setl updatetime=3
+let g:livepreview_previewer = 'open -a Preview'
 nmap <leader>ltx :LLPStartPreview<cr>
 
 "___1___Fuzzy finder
@@ -312,3 +312,7 @@ nnoremap <leader>w :ArgWrap<CR>
 "easy align
 xmap ga <Plug>(EasyAlign)
 nmap ga <Plug>(EasyAlign)
+
+"fadelevel
+let g:vimade = {}
+let g:vimade.fadelevel = 0.8
