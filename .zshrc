@@ -4,6 +4,7 @@
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/naderarbabian/.oh-my-zsh"
 source ~/.profile
+
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
@@ -62,8 +63,6 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git)
-
 source $ZSH/oh-my-zsh.sh
 
 # User configuration
@@ -116,6 +115,7 @@ POWERLEVEL9K_RPROMPT_ON_NEWLINE=true
 source ~/.fonts/*.sh
 export ZSH="$HOME/.oh-my-zsh"
 
+
 ZSH_THEME="powerlevel9k/powerlevel9k"
 POWERLEVEL9K_MODE="nerdfont-complete"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
@@ -147,9 +147,10 @@ plugins=(
   zsh-autosuggestions
 )
 
-source $ZSH/oh-my-zsh.sh
-source /Users/naderarbabian/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 #export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.7/site-packages"
-
+source $ZSH/oh-my-zsh.sh
 # added by travis gem
 [ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh
+
+
+source /Users/naderarbabian/.zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh

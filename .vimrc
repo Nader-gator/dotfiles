@@ -58,6 +58,7 @@ Plug 'mattn/emmet-vim'
 " Git
 Plug 'airblade/vim-gitgutter'
 Plug 'tpope/vim-fugitive'
+
 call plug#end()
 " }}}
 " FZF optiona and DEVICON function {{{
@@ -233,7 +234,18 @@ let g:ale_linters = {'ruby': ['standardrb']}
 let g:ale_fix_on_save = 1
 
 "hover info
-nmap <leader>hov :ALEHover<cr>| " The same, but in a new vertical split.
+nnoremap <leader>ho :call <SID>show_documentation()<CR>
+"function {{{
+"
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+"}}}
+
 
 "toggle linting
 nmap <leader>tl :ALEToggle<cr>| " Toggle ALE linting
@@ -301,7 +313,10 @@ nmap <leader>ec :ColorVEdit
 imap <A-o> <esc>o
 
 "emmet
-let g:user_emmet_leader_key='-'
+let g:user_emmet_leader_key=','
+let g:user_emmet_install_global = 0
+let g:user_emmet_mode='i'
+autocmd FileType html,css EmmetInstall
 
 "not hide tags in markdown
 let g:indentLine_fileTypeExclude = ['markdown']
@@ -315,4 +330,4 @@ nmap ga <Plug>(EasyAlign)
 
 "fadelevel
 let g:vimade = {}
-let g:vimade.fadelevel = 0.8
+let g:vimade.fadelevel = 0.7
