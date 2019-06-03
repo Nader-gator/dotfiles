@@ -120,7 +120,7 @@ ZSH_THEME="powerlevel9k/powerlevel9k"
 POWERLEVEL9K_MODE="nerdfont-complete"
 POWERLEVEL9K_PROMPT_ON_NEWLINE=true
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(os_icon user dir_writable dir vcs)
-POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time root_indicator background_jobs time disk_usage ram)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status virtualenv command_execution_time root_indicator background_jobs time disk_usage ram)
 #POWERLEVEL9K_MULTILINE_LAST_PROMPT_PREFIX="%(?:%{$fg_bold[green]%}➜ :%{$fg_bold[red]%}➜ )"
 #POWERLEVEL9K_MULTILINE_FIRST_PROMPT_PREFIX=""
 #POWERLEVEL9K_USER_ICON="\uF415" # 
@@ -147,6 +147,7 @@ plugins=(
   zsh-autosuggestions
 )
 
+
 #export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.7/site-packages"
 source $ZSH/oh-my-zsh.sh
 # added by travis gem
@@ -154,3 +155,7 @@ source $ZSH/oh-my-zsh.sh
 
 
 source /Users/naderarbabian/.zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
+mcr(){
+  gcc $1 && ./a.out
+}

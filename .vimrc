@@ -12,6 +12,7 @@ call plug#begin()
 " UI
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'mhinz/vim-startify'
+Plug 'mhinz/vim-grepper'
 
 " syntax and autofill
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
@@ -28,10 +29,12 @@ Plug 'Yggdroot/indentLine'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-airline/vim-airline'
 Plug 'TaDaa/vimade'
+Plug 'junegunn/goyo.vim'
 
 " Motion and navigation
 Plug 'easymotion/vim-easymotion'
 Plug 'terryma/vim-multiple-cursors'
+Plug 'wesQ3/vim-windowswap'
 
 " ease of use
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
@@ -48,12 +51,15 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 Plug 'FooSoft/vim-argwrap'
 Plug 'junegunn/vim-easy-align'
+Plug 'vim-scripts/greplace.vim'
+
 
 " invisible help
-Plug 'cohama/lexima.vim'
 Plug 'tpope/vim-sensible'
 Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
+Plug 'ryvnf/readline.vim'
+Plug 'cohama/lexima.vim'
 
 " Git
 Plug 'airblade/vim-gitgutter'
@@ -68,6 +74,26 @@ let g:fzf_action = {
   \ 'ctrl-t': 'tab split',
   \ 'ctrl-h': 'split',
   \ 'ctrl-v': 'vsplit' }
+
+let g:fzf_layout = { 'window': 'call FloatingFZF()' }
+function! FloatingFZF()
+  let buf = nvim_create_buf(v:false, v:true)
+  call setbufvar(buf, '&signcolumn', 'no')
+
+  let height = &lines - 3
+  let width = float2nr(&columns - (&columns * 2 / 10))
+  let col = float2nr((&columns - width) / 2)
+
+  let opts = {
+        \ 'relative': 'editor',
+        \ 'row': 1,
+        \ 'col': col,
+        \ 'width': width,
+        \ 'height': height
+        \ }
+
+  call nvim_open_win(buf, v:true, opts)
+endfunction
 
 function! Fzf_files_with_dev_icons(default_command,optional)
    "let l:fzf_files_options = '--preview "rougify {2..-1} | head -'.&lines.'"'
@@ -84,10 +110,10 @@ function! Fzf_files_with_dev_icons(default_command,optional)
         \ 'source': a:default_command.' | devicon-lookup',
         \ 'sink':   function('s:edit_devicon_prepended_file'),
         \ 'options': '-m ' . l:fzf_files_options,
-        \ 'down':    '40%' })
+        \ 'window': 'call FloatingFZF()'})
 endfunction
-nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
-nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
+nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
+nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
 
 " git diff {{{
  "function! Fzf_git_diff_files_with_dev_icons()
@@ -124,18 +150,13 @@ let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#show_tab_nr = 0
 let g:airline#extensions#tabline#formatter = 'unique_tail'
-let i = 1
-while i <= 9
-    execute 'nnoremap <Leader>' . i . ' :' . i . 'wincmd w<CR>'
-    let i = i + 1
-endwhile
 " }}}
 " COC instal script {{{
 "
 "CocInstall coc-json coc-tsserver coc-html woc-css coc-vetur coc-phpls coc-java coc-solargraph coc-rls coc-yaml coc-python coc-highlight coc-emmet coc-snippets
 "}}}
 " functions {{{
-function s:MKDir(...)
+function! s:MKDir(...)
     if         !a:0
            \|| isdirectory(a:1)
            \|| filereadable(a:1)
@@ -144,7 +165,7 @@ function s:MKDir(...)
     endif
     return mkdir(fnamemodify(a:1, ':p:h'), 'p')
 endfunction
-command -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
+command! -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
 xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
 
 function! ExecuteMacroOverVisualRange()
@@ -158,7 +179,8 @@ set splitright
 set mouse=a
 set fileignorecase
 set wildignorecase
-
+nnoremap <leader>v :e ~/.vimrc<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
 
 " color theme
 if (empty($TMUX))
@@ -177,6 +199,14 @@ highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
 set colorcolumn=80
 
+" disable rainbowing html tags
+let g:rainbow_conf = {
+\	'separately': {
+\		'html': 0,
+\	}
+\}
+" to keep all emmet tools in rails/django
+au BufReadPost *.html set filetype=html
 
 "git gutter
 set updatetime=100
@@ -187,6 +217,7 @@ nmap <Leader>gu <Plug>GitGutterUndoHunk
 " indent line markers
 let g:indentLine_char_list = ['|', '¦', '┆', '┊']
 let g:indentLine_leadingSpaceEnabled = 1
+autocmd FileType nerdtree IndentLinesDisable
 let g:indentLine_leadingSpaceChar = '·'
 
 
@@ -198,15 +229,15 @@ set softtabstop=2
 set shiftwidth=2
 
 "line number
-:set number relativenumber
-:augroup numbertoggle
-:autocmd!
-:autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
-:autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
-:augroup END
+set number relativenumber
+augroup numbertoggle
+autocmd!
+autocmd BufEnter,FocusGained,InsertLeave * set relativenumber
+autocmd BufLeave,FocusLost,InsertEnter   * set norelativenumber
+augroup END
 
 "LatexPreview options
-autocmd Filetype tex setl updatetime=3
+autocmd Filetype tex setl updatetime=1
 let g:livepreview_previewer = 'open -a Preview'
 nmap <leader>ltx :LLPStartPreview<cr>
 
@@ -219,10 +250,20 @@ nmap <leader>fc :Commands<cr>| " fuzzy find Vim commands (like Ctrl-Shift-P in S
 
 "___2___ ALE
 "goto definition
-nmap <leader>dn :ALEGoToDefinition<cr>|          " Open the definition of the symbol under the cursor.
-nmap <leader>dt :ALEGoToDefinitionInTab<cr>|    " The same, but for opening the file in a new tab.
-nmap <leader>dh :ALEGoToDefinitionInSplit<cr>|  " The same, but in a new split.
-nmap <leader>dv :ALEGoToDefinitionInVSplit<cr>| " The same, but in a new vertical split.
+nmap <leader>dn <Plug>(coc-definition)
+nmap <leader>dt :tabnew<cr> <Plug>(coc-definition)
+nmap <leader>dh :split<cr> <Plug>(coc-definition)
+nmap <leader>dv :vsplit<cr> <Plug>(coc-definition)
+let i = 1
+while i <= 20
+    execute 'nnoremap <Leader>' . i . '<Space>' . ' :' . i . 'wincmd w<CR>'
+    execute 'nmap <Leader>' . 'di' . i . '<Space>' . ' :let buffno=bufnr("%")<cr>:let linepos=line(".")<cr>:let colpos=col(".")<cr> :' . i . 'wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr>' . ' <Plug>(coc-definition)'
+    let i = i + 1
+endwhile
+
+"nmap <leader>tje :let buffno=bufnr('%')<cr>:let linepos=line('.')<cr>:let colpos=col('.')<cr> :2wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr> <Plug>(coc-definition)
+"nmap <silent> gd :split<cr> <Plug>(coc-definition)
+
 "let g:ale_fixers = ['prettier','remove_trailing_lines', 'trim_whitespace','autopep8']
 let g:ale_fixers = {
 \   '*': ['prettier','remove_trailing_lines', 'trim_whitespace'],
@@ -230,21 +271,10 @@ let g:ale_fixers = {
 \   'python': ['yapf'],
 \   'ruby': ['standardrb']
 \   }
-let g:ale_linters = {'ruby': ['standardrb']}
+let g:ale_linters = {'ruby': ['standardrb'],
+\   'python':['pylint','mypy','flake8','pylama']}
 let g:ale_fix_on_save = 1
 
-"hover info
-nnoremap <leader>ho :call <SID>show_documentation()<CR>
-"function {{{
-"
-function! s:show_documentation()
-  if (index(['vim','help'], &filetype) >= 0)
-    execute 'h '.expand('<cword>')
-  else
-    call CocAction('doHover')
-  endif
-endfunction
-"}}}
 
 
 "toggle linting
@@ -255,9 +285,10 @@ nmap <C-c> <Plug>NERDCommenterToggle
 
 "___4___NERDtree
 nmap <leader>nt :NERDTreeToggle<cr>
-let NERDTreeMapOpenSplit='h'
+let NERDTreeMapOpenSplit='s'
 let NERDTreeMapActivateNode='l'
 let NERDTreeMapOpenVSplit='v'
+nmap <Leader>r :NERDTreeRefreshRoot<cr>
 
 "___5___COC
 inoremap <expr> <C-j> pumvisible() ? "\<C-n>" : "\<C-j>"
@@ -274,7 +305,7 @@ nnoremap <Space> :noh<cr>
 set ignorecase
 
 " terminals
-nmap <leader>th :Term<cr>
+nmap <leader>ts :Term<cr>
 nmap <leader>tv :VTerm<cr>
 nmap <leader>tt :TTerm<cr>
 nmap <leader>tn :terminal<cr>
@@ -307,7 +338,7 @@ nmap <leader>g g
 nmap <A-d> [e
 nmap <A-f> ]e
 "color edit
-nmap <leader>ec :ColorVEdit
+nmap <leader>ec :ColorVEdit<cr>
 
 "newline
 imap <A-o> <esc>o
@@ -319,7 +350,7 @@ let g:user_emmet_mode='i'
 autocmd FileType html,css EmmetInstall
 
 "not hide tags in markdown
-let g:indentLine_fileTypeExclude = ['markdown']
+let g:indentLine_fileTypeExclude = ['markdown','nerdtree']
 
 " arg wrap
 nnoremap <leader>w :ArgWrap<CR>
@@ -331,3 +362,59 @@ nmap ga <Plug>(EasyAlign)
 "fadelevel
 let g:vimade = {}
 let g:vimade.fadelevel = 0.7
+
+"keep md upen
+let g:mkdp_auto_close = 0
+
+"compile and run
+nmap <leader>m :!gcc % && ./a.out<cr>
+
+"Grepper
+nmap <leader>gr :Grepper<cr>
+
+"html expand
+imap <leader>x <esc>f< i>
+
+" pear tree for django
+let g:pear_tree_pairs = {
+            \ '{': {'closer': '}'},
+            \ '{%': {'closer': ' %}'},
+            \ }
+
+" COC stuff {{{
+let g:coc_global_extensions = [
+  \ 'coc-emoji', 'coc-eslint', 'coc-prettier',
+  \ 'coc-tsserver', 'coc-tslint', 'coc-tslint-plugin',
+  \ 'coc-css', 'coc-json', 'coc-pyls', 'coc-yaml','coc-snippets','coc-highlight',
+  \ 'coc-emmet','CppSnippets','coc-solargraph','coc-python','coc-html',
+  \ 'https://github.com/one-harsh/vscode-cpp-snippets',
+  \]
+  " Better display for messages
+set cmdheight=2
+" Smaller updatetime for CursorHold & CursorHoldI
+set updatetime=300
+" don't give |ins-completion-menu| messages.
+set shortmess+=c
+" always show signcolumns
+set signcolumn=yes
+
+nmap <leader>rn <Plug>(coc-rename)
+
+autocmd CursorHold * silent call CocActionAsync('highlight')
+"hover info
+nnoremap <leader>ho :call <SID>show_documentation()<CR>
+"function {{{
+"
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  else
+    call CocAction('doHover')
+  endif
+endfunction
+"}}}
+"}}}
+
+autocmd FileType html imap <leader>t {%  %}<Left><Left><Left>
+
+nmap <leader>c :Goyo 90x90<cr>
