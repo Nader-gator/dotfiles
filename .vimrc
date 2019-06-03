@@ -375,12 +375,6 @@ nmap <leader>gr :Grepper<cr>
 "html expand
 imap <leader>x <esc>f< i>
 
-" pear tree for django
-let g:pear_tree_pairs = {
-            \ '{': {'closer': '}'},
-            \ '{%': {'closer': ' %}'},
-            \ }
-
 " COC stuff {{{
 let g:coc_global_extensions = [
   \ 'coc-emoji', 'coc-eslint', 'coc-prettier',
