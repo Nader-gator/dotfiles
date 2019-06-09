@@ -14,6 +14,7 @@ Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'mhinz/vim-startify'
 Plug 'mhinz/vim-grepper'
 
+
 " syntax and autofill
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
 Plug 'w0rp/ale'
@@ -52,13 +53,14 @@ Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 Plug 'FooSoft/vim-argwrap'
 Plug 'junegunn/vim-easy-align'
 Plug 'vim-scripts/greplace.vim'
+Plug 'brooth/far.vim'
 
 
 " invisible help
 Plug 'tpope/vim-sensible'
 Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
-Plug 'ryvnf/readline.vim'
+"Plug 'ryvnf/readline.vim'
 Plug 'cohama/lexima.vim'
 
 " Git
@@ -197,7 +199,7 @@ syntax on
 colorscheme onedark
 highlight CursorLineNr guifg=#e28409
 let g:rainbow_active = 1
-set colorcolumn=80
+set colorcolumn=100
 
 " disable rainbowing html tags
 let g:rainbow_conf = {
@@ -252,7 +254,7 @@ nmap <leader>fc :Commands<cr>| " fuzzy find Vim commands (like Ctrl-Shift-P in S
 "goto definition
 nmap <leader>dn <Plug>(coc-definition)
 nmap <leader>dt :tabnew<cr> <Plug>(coc-definition)
-nmap <leader>dh :split<cr> <Plug>(coc-definition)
+nmap <leader>ds :split<cr> <Plug>(coc-definition)
 nmap <leader>dv :vsplit<cr> <Plug>(coc-definition)
 let i = 1
 while i <= 20
@@ -268,13 +270,13 @@ endwhile
 let g:ale_fixers = {
 \   '*': ['prettier','remove_trailing_lines', 'trim_whitespace'],
 \   'javascript': ['eslint','prettier'],
-\   'python': ['yapf'],
+\   'python': ['autopep8'],
 \   'ruby': ['standardrb']
 \   }
 let g:ale_linters = {'ruby': ['standardrb'],
-\   'python':['pylint','mypy','flake8','pylama']}
+\   'python':['flake8','pylint']}
 let g:ale_fix_on_save = 1
-
+autocmd BufRead,BufNewFile ~/Code_stuff/surecave/* autocmd Filetype html let b:ale_fix_on_save = 0
 
 
 "toggle linting
@@ -337,6 +339,7 @@ nmap <leader>g g
 "moving lines
 nmap <A-d> [e
 nmap <A-f> ]e
+
 "color edit
 nmap <leader>ec :ColorVEdit<cr>
 
@@ -370,10 +373,10 @@ let g:mkdp_auto_close = 0
 nmap <leader>m :!gcc % && ./a.out<cr>
 
 "Grepper
-nmap <leader>gr :Grepper<cr>
+nmap <leader>fg :Ag<cr>
 
 "html expand
-imap <leader>x <esc>f< i>
+autocmd FileType html imap <leader>x <esc>f< i>
 
 " COC stuff {{{
 let g:coc_global_extensions = [

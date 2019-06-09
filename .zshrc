@@ -1,4 +1,3 @@
-zmodload zsh/zprof
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 #export TERM='xterm-256color'
@@ -103,7 +102,11 @@ alias vim=nvim
 alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 alias ls='python ~/Code_stuff/lsicons.py'
 alias lls='command ls'
+alias sc='cd ~/Code_stuff/surecave/src;source ~/Code_stuff/surecave/.env'
 
+managepy(){
+  python manage.py $1
+}
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
@@ -135,6 +138,8 @@ ZSH_DISABLE_COMPFIX=true
 ENABLE_CORRECTION="true"
 COMPLETION_WAITING_DOTS="true"
 
+#source /Users/naderarbabian/.zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+
 plugins=(
   git
   iterm2
@@ -154,10 +159,15 @@ source $ZSH/oh-my-zsh.sh
 [ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh
 
 
-#source /Users/naderarbabian/.zsh_plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
 
 mcr(){
   gcc $1 && ./a.out
 }
 
-#zprof
+count_lines(){
+cat $(find . -name $1) | grep -E -v '^\s*$|^\s*#' | wc -l
+}
+
+gip(){
+git add .;git commit -m "$1";git push
+}
