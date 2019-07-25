@@ -1,6 +1,6 @@
 export PATH="$HOME/.rbenv/bin:$PATH"
 eval "$(rbenv init -)"
-
+source ~/.profile
 # Run twolfson/sexy-bash-prompt
 . ~/.bash_prompt
 
@@ -23,3 +23,5 @@ test -e "${HOME}/.iterm2_shell_integration.bash" && source "${HOME}/.iterm2_shel
 
 # added by travis gem
 [ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh
+
+alias vim='nvim -u ~/.vimrclite'

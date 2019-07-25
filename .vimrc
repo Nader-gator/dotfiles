@@ -8,11 +8,10 @@ endif
 " }}}
 " Plugins {{{
 call plug#begin()
-
 " UI
 Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
 Plug 'mhinz/vim-startify'
-Plug 'mhinz/vim-grepper'
+"Plug 'mhinz/vim-grepper'
 
 
 " syntax and autofill
@@ -52,8 +51,9 @@ Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install'  }
 Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
 Plug 'FooSoft/vim-argwrap'
 Plug 'junegunn/vim-easy-align'
-Plug 'vim-scripts/greplace.vim'
+"Plug 'vim-scripts/greplace.vim'
 Plug 'brooth/far.vim'
+Plug 'jeetsukumaran/vim-pythonsense'
 
 
 " invisible help
@@ -62,6 +62,11 @@ Plug 'alvan/vim-closetag'
 Plug 'mattn/emmet-vim'
 "Plug 'ryvnf/readline.vim'
 Plug 'cohama/lexima.vim'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'tmhedberg/SimpylFold'
+Plug 'Konfekt/FastFold'
+Plug 'rizzatti/dash.vim'
+Plug 'ianding1/leetcode.vim'
 
 " Git
 Plug 'airblade/vim-gitgutter'
@@ -175,14 +180,19 @@ function! ExecuteMacroOverVisualRange()
   execute ":'<,'>normal @".nr2char(getchar())
 endfunction
 "}}}
-
 set splitbelow
 set splitright
 set mouse=a
 set fileignorecase
 set wildignorecase
+" simple vim changes
 nnoremap <leader>v :e ~/.vimrc<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
+map <BS> \
+nnoremap * m`:keepjumps normal! *``<cr>
+
+let g:leetcode_solution_filetype='python'
+let g:leetcode_username='nader-gator'
 
 " color theme
 if (empty($TMUX))
@@ -226,9 +236,9 @@ let g:indentLine_leadingSpaceChar = '·'
 "tabs
 filetype plugin indent on
 set expandtab
-set tabstop=2
-set softtabstop=2
-set shiftwidth=2
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
 
 "line number
 set number relativenumber
@@ -249,6 +259,8 @@ nmap <leader>fl :Lines<cr>|   " fuzzy find lines in the current file
 nmap <leader>fb :Buffers<cr>|  " fuzzy find an open buffer
 nmap <leader>ft :Tags<cr>|     " fuzzy find text in the working directory
 nmap <leader>fc :Commands<cr>| " fuzzy find Vim commands (like Ctrl-Shift-P in Sublime/Atom/VSC)
+nmap <leader>fg :Ag<cr>
+command! -bang -nargs=+ -complete=dir Rag call fzf#vim#ag_raw(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
 
 "___2___ ALE
 "goto definition
@@ -274,9 +286,12 @@ let g:ale_fixers = {
 \   'ruby': ['standardrb']
 \   }
 let g:ale_linters = {'ruby': ['standardrb'],
-\   'python':['flake8','pylint']}
+            \   'python':['flake8']}
+
 let g:ale_fix_on_save = 1
-autocmd BufRead,BufNewFile ~/Code_stuff/surecave/* autocmd Filetype html let b:ale_fix_on_save = 0
+
+nmap <leader>fd :let b:ale_fix_on_save = 0<cr>
+nmap <leader>fe :let b:ale_fix_on_save = 1<cr>
 
 
 "toggle linting
@@ -331,6 +346,7 @@ let g:EasyMotion_keys='edcrfvtgbyhnujm'
 
 "copy pasting
 nnoremap d "ad
+nnoremap dd "add
 nnoremap <leader>p "ap
 
 "canceling importjs
@@ -342,9 +358,6 @@ nmap <A-f> ]e
 
 "color edit
 nmap <leader>ec :ColorVEdit<cr>
-
-"newline
-imap <A-o> <esc>o
 
 "emmet
 let g:user_emmet_leader_key=','
@@ -370,20 +383,25 @@ let g:vimade.fadelevel = 0.7
 let g:mkdp_auto_close = 0
 
 "compile and run
-nmap <leader>m :!gcc % && ./a.out<cr>
+autocmd FileType c nmap <leader>m :!gcc % && ./a.out<cr>
+autocmd FileType cpp nmap <leader>m :!g++ % && ./a.out<cr>
+autocmd FileType rust nmap <leader>m :!rustc % && ./%:r<cr>
 
-"Grepper
-nmap <leader>fg :Ag<cr>
 
 "html expand
 autocmd FileType html imap <leader>x <esc>f< i>
-
+autocmd FileType html imap <leader>t {%  %}<Left><Left><Left>
+augroup dtl_ft
+  au!
+  autocmd BufNewFile,BufRead *.dtl set syntax=html
+  autocmd BufNewFile,BufRead *.dtl set filetype=html
+augroup END
 " COC stuff {{{
 let g:coc_global_extensions = [
-  \ 'coc-emoji', 'coc-eslint', 'coc-prettier',
+  \ 'coc-emoji', 'coc-prettier',
   \ 'coc-tsserver', 'coc-tslint', 'coc-tslint-plugin',
   \ 'coc-css', 'coc-json', 'coc-pyls', 'coc-yaml','coc-snippets','coc-highlight',
-  \ 'coc-emmet','CppSnippets','coc-solargraph','coc-python','coc-html',
+  \ 'coc-emmet','CppSnippets','coc-solargraph','coc-python','coc-html','coc-rls',
   \ 'https://github.com/one-harsh/vscode-cpp-snippets',
   \]
   " Better display for messages
@@ -397,7 +415,7 @@ set signcolumn=yes
 
 nmap <leader>rn <Plug>(coc-rename)
 
-autocmd CursorHold * silent call CocActionAsync('highlight')
+" autocmd CursorHold * silent call CocActionAsync('highlight')
 "hover info
 nnoremap <leader>ho :call <SID>show_documentation()<CR>
 "function {{{
@@ -412,6 +430,28 @@ endfunction
 "}}}
 "}}}
 
-autocmd FileType html imap <leader>t {%  %}<Left><Left><Left>
 
 nmap <leader>c :Goyo 90x90<cr>
+
+autocmd FileType python call SetPythonOptions()
+function! SetPythonOptions()
+    nmap <leader>db  obreakpoint(context=10)<esc>
+    nmap <leader>pc o"""<cr><esc>O
+    nmap <leader>mp :! mypy %<cr>
+    nmap <leader>mm :! python3 %<cr>
+    set nofoldenable
+    set foldlevel=99
+endfunction
+
+
+autocmd BufEnter,BufNew,BufEnter *.cson call SetCSON()
+function! SetCSON()
+    set filetype=markdown
+    IndentLinesDisable
+endfunction
+
+nmap <leader>dd <Plug>DashSearch
+nmap <leader>wd 1<C-g>
+
+let g:airline#extensions#branch#enabled = 0
+let g:airline#extensions#hunks#enabled = 0

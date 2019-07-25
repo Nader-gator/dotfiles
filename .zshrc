@@ -3,7 +3,7 @@
 #export TERM='xterm-256color'
 # Path to your oh-my-zsh installation.
 export ZSH="/Users/naderarbabian/.oh-my-zsh"
-#source ~/.profile
+source ~/.profile
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -89,20 +89,6 @@ fi
 # Example aliases
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
-alias be="bundle exec"
-alias cs="cd ~/Code_stuff"
-alias dt="cd ~/Desktop"
-alias dl="cd ~/Downloads"
-alias ovim="command vim"
-alias python=python3
-alias python2="command python"
-alias pip=pip3
-alias pip2="command pip"
-alias vim=nvim
-alias config='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
-alias ls='python ~/Code_stuff/lsicons.py'
-alias lls='command ls'
-alias sc='cd ~/Code_stuff/surecave/src;source ~/Code_stuff/surecave/.env'
 
 managepy(){
   python manage.py $1
@@ -152,6 +138,9 @@ plugins=(
   zsh-autosuggestions
 )
 
+alias ls='python ~/Code_stuff/lsicons.py'
+alias lls='command ls'
+alias litevim='nvim -u ~/.vimrclite'
 
 #export PYTHONPATH="${PYTHONPATH}:/usr/local/lib/python3.7/site-packages"
 source $ZSH/oh-my-zsh.sh
@@ -170,4 +159,8 @@ cat $(find . -name $1) | grep -E -v '^\s*$|^\s*#' | wc -l
 
 gip(){
 git add .;git commit -m "$1";git push
+}
+
+se(){
+source ~/Code_stuff/Enviroments/$1/bin/activate
 }

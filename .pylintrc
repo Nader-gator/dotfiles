@@ -141,7 +141,9 @@ disable=print-statement,
         exception-escape,
         comprehension-escape,
         W0223,
-        W0105
+        W0105,
+        W0201,
+        W0511
 
 
 # Enable the message, report, category or checker with the given id(s). You can
