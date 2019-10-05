@@ -39,7 +39,8 @@ Plug 'wesQ3/vim-windowswap'
 " ease of use
 Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
 Plug 'junegunn/fzf.vim'
-Plug 'scrooloose/nerdcommenter'
+"Plug 'scrooloose/nerdcommenter'
+Plug 'tomtom/tcomment_vim'
 Plug 'vimlab/split-term.vim'
 Plug 'Galooshi/vim-import-js'
 Plug 'tpope/vim-surround'
@@ -271,6 +272,7 @@ nmap <leader>dv :vsplit<cr> <Plug>(coc-definition)
 let i = 1
 while i <= 20
     execute 'nnoremap <Leader>' . i . '<Space>' . ' :' . i . 'wincmd w<CR>'
+    execute 'nnoremap ]' . i . '<Space> ' .  i . 'gt'
     execute 'nmap <Leader>' . 'di' . i . '<Space>' . ' :let buffno=bufnr("%")<cr>:let linepos=line(".")<cr>:let colpos=col(".")<cr> :' . i . 'wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr>' . ' <Plug>(coc-definition)'
     let i = i + 1
 endwhile
@@ -298,7 +300,8 @@ nmap <leader>fe :let b:ale_fix_on_save = 1<cr>
 nmap <leader>tl :ALEToggle<cr>| " Toggle ALE linting
 
 "___3___Commenter
-nmap <C-c> <Plug>NERDCommenterToggle
+" nmap <C-c> <Plug>NERDCommenterToggle
+nmap <C-c> gcc
 
 "___4___NERDtree
 nmap <leader>nt :NERDTreeToggle<cr>
@@ -325,7 +328,9 @@ set ignorecase
 nmap <leader>ts :Term<cr>
 nmap <leader>tv :VTerm<cr>
 nmap <leader>tt :TTerm<cr>
-nmap <leader>tn :terminal<cr>
+nmap <leader>ter :terminal<cr>
+
+nmap <leader>tn :tabnew<cr>
 
 "easier term movement
 nmap <A-h> <C-w>h
@@ -391,6 +396,7 @@ autocmd FileType rust nmap <leader>m :!rustc % && ./%:r<cr>
 "html expand
 autocmd FileType html imap <leader>x <esc>f< i>
 autocmd FileType html imap <leader>t {%  %}<Left><Left><Left>
+
 augroup dtl_ft
   au!
   autocmd BufNewFile,BufRead *.dtl set syntax=html
@@ -455,3 +461,9 @@ nmap <leader>wd 1<C-g>
 
 let g:airline#extensions#branch#enabled = 0
 let g:airline#extensions#hunks#enabled = 0
+
+nmap <leader>fix :ALEFix<cr>
+nnoremap <leader>mv :tab split<CR>
+
+
+autocmd BufNewFile,BufRead .env* set filetype=sh

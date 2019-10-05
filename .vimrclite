@@ -1,0 +1,43 @@
+" vim:fdm=marker
+call plug#begin()
+    Plug 'easymotion/vim-easymotion'
+call plug#end()
+nmap <leader>q <Plug>(easymotion-bd-w)
+let g:EasyMotion_keys='edcrfvtgbyhnujm'
+
+set splitbelow
+set splitright
+set mouse=a
+set fileignorecase
+set wildignorecase
+set ignorecase
+nnoremap <leader>v :e ~/.vimrclite<cr>
+nnoremap <leader>sv :source $MYVIMRC<cr>
+map <BS> \
+nnoremap * m`:keepjumps normal! *``<cr>
+syntax on
+set colorcolumn=80
+set expandtab
+set tabstop=4
+set softtabstop=4
+set shiftwidth=4
+set number relativenumber
+
+
+nnoremap <Space> :noh<cr>
+nmap Q :q<cr>
+nmap W :w<cr>
+
+
+set lines=40
+set columns=90
+
+
+nnoremap * m`:keepjumps normal! *``<cr>
+
+
+
+set clipboard=unnamed
+nnoremap d "ad
+nnoremap dd "add
+nnoremap <leader>p "ap
