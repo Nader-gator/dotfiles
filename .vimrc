@@ -16,7 +16,7 @@ Plug 'mhinz/vim-startify'
 
 " syntax and autofill
 Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
-Plug 'w0rp/ale'
+Plug 'w0rp/ale', {'commit': '1ee56713b8f9cfd0faa99dd7930437fa7ed986b0'}
 Plug 'Nader-gator/vim-polyglot'
 Plug 'luochen1990/rainbow'
 Plug 'andymass/vim-matchup'
@@ -28,7 +28,7 @@ Plug 'tiagofumo/vim-nerdtree-syntax-highlight'
 Plug 'Yggdroot/indentLine'
 Plug 'vim-airline/vim-airline-themes'
 Plug 'vim-airline/vim-airline'
-Plug 'TaDaa/vimade'
+" Plug 'TaDaa/vimade'
 Plug 'junegunn/goyo.vim'
 
 " Motion and navigation
@@ -149,11 +149,11 @@ nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
 function! WindowNumber(...)
     let builder = a:1
     let context = a:2
-    call builder.add_section('airline_c', '%{tabpagewinnr(tabpagenr())}')
+    " call builder.add_section('airline_c', '%{tabpagewinnr(tabpagenr())}')
     return 0
 endfunction
-call airline#add_statusline_func('WindowNumber')
-call airline#add_inactive_statusline_func('WindowNumber')
+" call airline#add_statusline_func('WindowNumber')
+" call airline#add_inactive_statusline_func('WindowNumber')
 let g:airline#extensions#tabline#enabled = 1
 let g:airline_powerline_fonts = 1
 let g:airline#extensions#tabline#show_tab_nr = 0
@@ -192,6 +192,8 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 map <BS> \
 nnoremap * m`:keepjumps normal! *``<cr>
 
+let g:xml_syntax_folding = 0
+
 let g:leetcode_solution_filetype='python'
 let g:leetcode_username='nader-gator'
 
@@ -222,9 +224,10 @@ let g:rainbow_conf = {
 au BufReadPost *.html set filetype=html
 
 "git gutter
-set updatetime=100
-nmap <Leader>gd <Plug>GitGutterPreviewHunk
-nmap <Leader>gu <Plug>GitGutterUndoHunk
+set updatetime=400
+nmap <Leader>gd <Plug>(GitGutterPreviewHunk)
+nmap <Leader>gu <Plug>(GitGutterUndoHunk)
+let g:gitgutter_preview_win_floating = 0
 
 
 " indent line markers
@@ -288,13 +291,14 @@ let g:ale_fixers = {
 \   'ruby': ['standardrb']
 \   }
 let g:ale_linters = {'ruby': ['standardrb'],
-            \   'python':['flake8']}
+            \   'python':['']}
+let g:ale_completion_enabled = 0
 
 let g:ale_fix_on_save = 1
 
 nmap <leader>fd :let b:ale_fix_on_save = 0<cr>
 nmap <leader>fe :let b:ale_fix_on_save = 1<cr>
-
+"
 
 "toggle linting
 nmap <leader>tl :ALEToggle<cr>| " Toggle ALE linting
