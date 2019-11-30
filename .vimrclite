@@ -1,10 +1,28 @@
 " vim:fdm=marker
 call plug#begin()
     Plug 'easymotion/vim-easymotion'
+        "config {{{
+        let g:EasyMotion_keys='edcrfvtgbyhnujm'
+        "}}}
+    Plug 'wesQ3/vim-windowswap'
+    Plug 'tomtom/tcomment_vim'
+        "config {{{
+        nmap <C-c> gcc
+        "}}}
+    Plug 'tpope/vim-surround'
+    Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
+    Plug 'junegunn/fzf.vim'
+        "config {{{
+        nmap <leader>ff :Files<cr>
+        nmap <leader>fg :Ag<cr>
+        "}}}
 call plug#end()
 nmap <leader>q <Plug>(easymotion-bd-w)
 let g:EasyMotion_keys='edcrfvtgbyhnujm'
 
+imap jj <Esc>
+
+highlight CursorLineNr guifg=#e28409
 set splitbelow
 set splitright
 set mouse=a
@@ -14,6 +32,8 @@ set ignorecase
 nnoremap <leader>v :e ~/.vimrclite<cr>
 nnoremap <leader>sv :source $MYVIMRC<cr>
 map <BS> \
+map <BS><BS> \\
+nnoremap <leader>mv :tab split<CR>
 nnoremap * m`:keepjumps normal! *``<cr>
 syntax on
 set colorcolumn=80
@@ -23,21 +43,44 @@ set softtabstop=4
 set shiftwidth=4
 set number relativenumber
 
-
 nnoremap <Space> :noh<cr>
 nmap Q :q<cr>
-nmap W :w<cr>
+nmap ]w :w<cr>
 
-
-set lines=40
-set columns=90
-
-
-nnoremap * m`:keepjumps normal! *``<cr>
-
-
-
-set clipboard=unnamed
+" set clipboard=unnamed
 nnoremap d "ad
+vnoremap d "ad
 nnoremap dd "add
-nnoremap <leader>p "ap
+nnoremap <leader>pp "ap
+
+" Copy to clipboard
+vnoremap  y  "+y
+nnoremap  Y  "+yg_
+nnoremap  y  "+y
+nnoremap  yy  "+yy
+
+" " Paste from clipboard
+nnoremap p "+p
+nnoremap P "+P
+vnoremap p "+p
+vnoremap P "+P
+
+
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+"iterative mapping {{{
+let i = 1
+while i <= 20
+    execute 'nnoremap <Leader>' . i . '<Space>' . ' :' . i . 'wincmd w<CR>'
+    execute 'nnoremap ]' . i . '<Space> ' .  i . 'gt'
+    execute 'nmap <Leader>di' . i . '<Space>' .
+                \ ' :let buffno=bufnr("%")<cr>' .
+                \ ':let linepos=line(".")<cr>:let colpos=col(".")<cr> :' . i .
+                \ 'wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr>' .
+                \ ' <Plug>(coc-definition)'
+    let i = i + 1
+endwhile
+"}}}
