@@ -9,7 +9,7 @@
 	process = git-lfs filter-process
 	required = true
 [core]
-	editor = nvim
+	editor = nvim -u ~/.vimrclite
 	excludesfile = /Users/naderarbabian/.gitignore_global
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"

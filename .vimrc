@@ -93,22 +93,6 @@ call plug#begin()
     "}}}
 
 ">>> Themses and visual
-    Plug 'Yggdroot/indentLine' "adds lines in indents
-        "config {{{
-        let g:indentLine_char_list = ['│']
-        let g:indentLine_leadingSpaceEnabled = 1
-        let g:indentLine_leadingSpaceChar = '·'
-        let g:indentLine_fileTypeExclude = ['markdown','nerdtree']
-        autocmd FileType nerdtree IndentLinesDisable
-        "}}}
-    Plug 'junegunn/goyo.vim'
-        "config {{{
-        nmap <leader>goy :Goyo 90x90<cr>
-        "}}}
-    Plug 'joshdick/onedark.vim'
-    Plug 'ryanoasis/vim-devicons' "MAYBE, 4 ms startup
-    "disabled {{{
-    "Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle' }
     Plug 'vim-airline/vim-airline-themes'
     Plug 'vim-airline/vim-airline'
         "config {{{
@@ -128,6 +112,22 @@ call plug#begin()
         let g:airline#extensions#hunks#enabled = 1
         let g:airline_section_b = '%{strftime("%H:%M")}'
     "}}}
+    Plug 'Yggdroot/indentLine' "adds lines in indents
+        "config {{{
+        let g:indentLine_char_list = ['│']
+        let g:indentLine_leadingSpaceEnabled = 1
+        let g:indentLine_leadingSpaceChar = '·'
+        let g:indentLine_fileTypeExclude = ['markdown','nerdtree']
+        autocmd FileType nerdtree IndentLinesDisable
+        "}}}
+    Plug 'junegunn/goyo.vim'
+        "config {{{
+        nmap <leader>goy :Goyo 90x90<cr>
+        "}}}
+    Plug 'joshdick/onedark.vim'
+    Plug 'ryanoasis/vim-devicons' "MAYBE, 4 ms startup
+    "disabled {{{
+    "Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle' }
     "Plug 'TaDaa/vimade'
     "}}}
 
@@ -135,6 +135,7 @@ call plug#begin()
     Plug 'easymotion/vim-easymotion'
         "config {{{
         let g:EasyMotion_keys='edcrfvtgbyhnujm'
+        map <C-f> <Plug>(easymotion-prefix)
         "}}}
     Plug 'wesQ3/vim-windowswap'
     "disabled {{{
@@ -148,7 +149,7 @@ call plug#begin()
         nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
         nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
         nmap <leader>git :call Fzf_git_diff_files_with_dev_icons()<CR>
-        nmap <C-f> :Files<cr>|    "fuzzy find files in the working directory (where you launched Vim from)
+        " nmap <C-f> :Files<cr>|    "fuzzy find files in the working directory (where you launched Vim from)
         nmap <leader>fl :Lines<cr>|   "fuzzy find lines in the current file
         nmap <leader>fb :Buffers<cr>|  "fuzzy find an open buffer
         nmap <leader>ft :Tags<cr>|     "fuzzy find text in the working directory
@@ -255,6 +256,8 @@ call plug#end()
 "}}}
 "}}}
 "basic config {{{
+set re=1
+set lazyredraw
 set guioptions=M
 set splitbelow
 set splitright
@@ -276,8 +279,6 @@ set number relativenumber
     set tabstop=4
     set softtabstop=4
     set shiftwidth=4
-
-"line number
 "}}}
 "sensible stuff {{{
 filetype plugin indent on
@@ -363,7 +364,14 @@ set scrolloff=1
     "Rust{{{
     autocmd FileType rust call SetRustlang()
     function! SetRustlang()
-        nmap <leader>mm :w \|!rustc % && ./%:r<cr>
+        nmap <leader>mm :w \|!rustc % && %:r<cr>
+    endfunction
+    "
+    "}}}
+    "Haskell{{{
+    autocmd FileType haskell call SetHaskelllang()
+    function! SetHaskelllang()
+        nmap <leader>mm :w \|!ghc % && ./%:r<cr>
     endfunction
     "
     "}}}

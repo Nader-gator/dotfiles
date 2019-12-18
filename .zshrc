@@ -1,7 +1,6 @@
 source ~/.profile
 export LANG=en_US.UTF-8
   export EDITOR='nvim'
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 mcr(){
   gcc $1 && ./a.out
 }
@@ -14,9 +13,62 @@ git add .;git commit -m "$1";git push
 se(){
 source ~/Code_stuff/Enviroments/$1/bin/activate
 }
-[ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
+install_lib(){
+    ve
+    cd libs/
+    ./reinstall-library.sh
+    ve
+    docker-compose restart
+    sc
+    docker-compose restart
+
+
+}
+copy_lib(){
+    cd ~/Code_stuff/vero/libs/vero_grpc_lib
+    python setup.py sdist
+    rm -r *.egg-info
+    cd ~/Code_stuff/vero/libs/vero_shared_lib
+    python setup.py sdist
+    rm -r *.egg-info
+    cd ~/Code_stuff/legacy/dist/
+    rm -f *
+    cp ~/Code_stuff/vero/libs/vero_grpc_lib/dist/*.gz .
+    cp ~/Code_stuff/vero/libs/vero_shared_lib/dist/*.gz .
+    # echo "Success local regen"
+    # if [[ "$1" = "1" ]] || [[ -z "$1" ]]
+    # then
+    #     sc
+    #     docker-compose stop
+    #     reinstalll_package vero_django app
+    #     reinstalll_package vero_django_grpc grpc
+    #     reinstalll_package vero_rqworker rqworker
+    #     docker-compose restart
+    # fi
+    # if [[ "$1" = "2" ]] || [[ -z "$1" ]]
+    # then
+    #     ve
+    #     docker-compose stop
+    #     exec_reinstall stonehenge-poll stonehenge-poll
+    #     exec_reinstall stonehenge-grpc-server stonehenge_grpc
+    #     docker-compose restart
+    # fi
+}
+reinstalll_package(){
+    docker-compose up -d $2
+    docker cp dist $1:/usr/app
+    docker exec $1 sh -c "pip install /usr/app/dist/*"
+}
+exec_reinstall(){
+    docker-compose up -d $2
+    docker exec $1 sh -c "cd /vero/libs/ && ./reinstall-library.sh"
+}
+
+[ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] \
+    && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
 # added by travis gem
-[ -f /Users/naderarbabian/.travis/travis.sh ] && source /Users/naderarbabian/.travis/travis.sh
+[ -f /Users/naderarbabian/.travis/travis.sh ] \
+    && source /Users/naderarbabian/.travis/travis.sh
 plugins=(
   git
   iterm2
@@ -30,3 +82,5 @@ plugins=(
 )
 
 source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+unalias rm
