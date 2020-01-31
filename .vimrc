@@ -314,7 +314,7 @@ set scrolloff=1
     nnoremap <leader>v :e ~/.vimrc<cr>
     nnoremap <leader>sv :source $MYVIMRC<cr>
     nmap <BS> \
-    map <BS><BS> \\
+    nmap <BS><BS> \\
     nnoremap * m`:keepjumps normal! *``<cr>
     nnoremap <Space> :noh<cr>
     nmap <leader>tn :tabnew<cr>
