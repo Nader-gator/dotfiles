@@ -1,5 +1,8 @@
 " vim:fdm=marker
 " vim: set foldlevel=0:
+
+let g:python3_host_prog = '/usr/local/bin/python3'
+let g:python_host_prog = '/usr/local/bin/python'
 "
 "TODO
 "fix oh my zsh
@@ -24,6 +27,7 @@ endif
 "Plugins {{{
 call plug#begin()
 
+" Plug 'klen/rope-vim'
 ">>> UI
     Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
         "config {{{
@@ -39,32 +43,34 @@ call plug#begin()
     "}}}
 
 ">>> syntax and autofill
-    " Plug 'w0rp/ale', {'commit': '1ee56713b8f9cfd0faa99dd7930437fa7ed986b0'}
-    Plug 'w0rp/ale'
+    Plug 'dense-analysis/ale'
         "config :TODO fix linting situation {{{
         nmap <leader>fd :let b:ale_fix_on_save = 0<cr>
         nmap <leader>fe :let b:ale_fix_on_save = 1<cr>
         nmap <leader>tl :ALEToggle<cr>| "Toggle ALE linting
         nmap <leader>fix :ALEFix<cr>
         let g:ale_fixers = {
-        \   '*': ['prettier','remove_trailing_lines', 'trim_whitespace'],
+        \   '*': ['remove_trailing_lines', 'trim_whitespace'],
         \   'javascript': ['eslint','prettier'],
         \   'python': ['autopep8'],
         \   'ruby': ['standardrb']
         \   }
         let g:ale_linters = {
         \   'ruby': ['standardrb'],
-        \   'python':['']
+        \   'python': ['flake8', 'mypy', 'pylint', 'pyls'],
+        \   'rust': ['cargo', 'rls'],
         \   }
         let g:ale_completion_enabled = 0
         let g:ale_fix_on_save = 1
+        nmap <leader>dn :ALEGoToDefinition<cr>zz
+        nmap <leader>dt :tab split<cr> :ALEGoToDefinition<cr>zz
+        nmap <leader>ds :split<cr> :ALEGoToDefinition<cr>zz
+        nmap <leader>dv :vsplit<cr> :ALEGoToDefinition<cr>zz
+		nnoremap <leader>doc :ALEHover<CR>
         "}}}
     Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
         "config {{{
-        nmap <leader>dn <Plug>(coc-definition)
-        nmap <leader>dt :tabnew<cr> <Plug>(coc-definition)
-        nmap <leader>ds :split<cr> <Plug>(coc-definition)
-        nmap <leader>dv :vsplit<cr> <Plug>(coc-definition)
+		nnoremap <leader>ho :call <SID>show_documentation()<CR>
         let g:coc_global_extensions = [
           \ 'coc-emoji', 'coc-prettier',
           \ 'coc-tsserver', 'coc-tslint', 'coc-tslint-plugin',
@@ -72,16 +78,11 @@ call plug#begin()
           \ 'coc-emmet','CppSnippets','coc-solargraph','coc-python','coc-html','coc-rls',
           \ 'https://github.com/one-harsh/vscode-cpp-snippets',
           \]
-        "}}}
-    Plug 'luochen1990/rainbow'
+        " }}}
+    Plug 'frazrepo/vim-rainbow'
         "config {{{
         let g:rainbow_active = 1
-        let g:rainbow_conf = {
-        \	'separately': {
-        \		'html': 0,
-        \	}
-        \}
-        "}}}
+        " }}}
     Plug 'sheerun/vim-polyglot'
         "config {{{
         " let g:polyglot_disabled = ['python-indent']
@@ -124,7 +125,8 @@ call plug#begin()
         "config {{{
         nmap <leader>goy :Goyo 90x90<cr>
         "}}}
-    Plug 'joshdick/onedark.vim'
+    " Plug 'joshdick/onedark.vim'
+    Plug 'morhetz/gruvbox'
     Plug 'ryanoasis/vim-devicons' "MAYBE, 4 ms startup
     "disabled {{{
     "Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle' }
@@ -135,7 +137,7 @@ call plug#begin()
     Plug 'easymotion/vim-easymotion'
         "config {{{
         let g:EasyMotion_keys='edcrfvtgbyhnujm'
-        map <C-f> <Plug>(easymotion-prefix)
+        map <C-q> <Plug>(easymotion-prefix)
         "}}}
     Plug 'wesQ3/vim-windowswap'
     "disabled {{{
@@ -149,13 +151,20 @@ call plug#begin()
         nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
         nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
         nmap <leader>git :call Fzf_git_diff_files_with_dev_icons()<CR>
-        " nmap <C-f> :Files<cr>|    "fuzzy find files in the working directory (where you launched Vim from)
+        nmap <C-f> :Files<cr>|    "fuzzy find files in the working directory (where you launched Vim from)
         nmap <leader>fl :Lines<cr>|   "fuzzy find lines in the current file
         nmap <leader>fb :Buffers<cr>|  "fuzzy find an open buffer
         nmap <leader>ft :Tags<cr>|     "fuzzy find text in the working directory
         nmap <leader>fc :Commands<cr>| "fuzzy find Vim commands (like Ctrl-Shift-P in Sublime/Atom/VSC)
         nmap <leader>fg :Ag<cr>
+        let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+        let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+        let g:fzf_action = {
+          \ 'ctrl-t': 'tab split',
+          \ 'ctrl-s': 'split',
+          \ 'ctrl-v': 'vsplit' }
         command! -bang -nargs=+ -complete=dir Rag call fzf#vim#ag_raw(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
+        " let g:fzf_layout = { 'window': 'call FloatingFZF()' }
         "}}}
     Plug 'mattn/emmet-vim'
         "config {{{
@@ -265,7 +274,8 @@ set mouse=a
 set fileignorecase
 set wildignorecase
 syntax on
-colorscheme onedark
+" colorscheme onedark
+colorscheme gruvbox
 highlight CursorLineNr guifg=#e28409
 set colorcolumn=100
 set updatetime=300 | "gut gutter wants 400 coc wants 300
@@ -344,7 +354,6 @@ set scrolloff=1
     "function calls {{{
     nnoremap <leader>zz :call VCenterCursor()<CR>
     xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
-    nnoremap <leader>ho :call <SID>show_documentation()<CR>
     "}}}
 "}}}
 "language specific mapping {{{
@@ -391,6 +400,7 @@ set scrolloff=1
     function! SetHTML()
         imap <leader>x <esc>f< i>
         imap <leader>t {%  %}<Left><Left><Left>
+        call rainbow#clear()
     endfunction
     "}}}
     "dtl {{{
@@ -398,6 +408,13 @@ set scrolloff=1
       function! Setdtl()
         set syntax=html
         set filetype=html
+        call rainbow#clear()
+      endfunction
+    "}}}
+    "Sass {{{
+      autocmd BufNew,BufRead *.scss call SetSass()
+      function! SetSass()
+        call rainbow#clear()
       endfunction
     "}}}
     "CSON {{{
@@ -429,7 +446,7 @@ while i <= 20
                 \ ' :let buffno=bufnr("%")<cr>' .
                 \ ':let linepos=line(".")<cr>:let colpos=col(".")<cr> :' . i .
                 \ 'wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr>' .
-                \ ' <Plug>(coc-definition)'
+                \ ' :ALEGoToDefinition<cr>zz'
     let i = i + 1
 endwhile
 "}}}
@@ -449,14 +466,6 @@ endif
 "function definitions {{{
 "FZF optiona and DEVICON function {{{
 "normal search {{{
-let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
-let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-let g:fzf_action = {
-  \ 'ctrl-t': 'tab split',
-  \ 'ctrl-h': 'split',
-  \ 'ctrl-v': 'vsplit' }
-
-let g:fzf_layout = { 'window': 'call FloatingFZF()' }
 function! FloatingFZF()
   let buf = nvim_create_buf(v:false, v:true)
   call setbufvar(buf, '&signcolumn', 'no')

@@ -3,7 +3,9 @@ call plug#begin()
     Plug 'easymotion/vim-easymotion'
         "config {{{
         let g:EasyMotion_keys='edcrfvtgbyhnujm'
+        map <C-q> <Plug>(easymotion-prefix)
         "}}}
+    Plug 'sheerun/vim-polyglot'
     Plug 'wesQ3/vim-windowswap'
     Plug 'tomtom/tcomment_vim'
         "config {{{
@@ -16,12 +18,16 @@ call plug#begin()
         nmap <leader>ff :Files<cr>
         nmap <leader>fg :Ag<cr>
         "}}}
+    Plug 'morhetz/gruvbox'
 call plug#end()
+colorscheme gruvbox
 nmap <leader>q <Plug>(easymotion-bd-w)
+nmap <leader>n :e .temp.md<Cr>
 let g:EasyMotion_keys='edcrfvtgbyhnujm'
 
+" set lines=40 
+" set columns=1000
 imap jj <Esc>
-
 highlight CursorLineNr guifg=#e28409
 set splitbelow
 set splitright
@@ -34,6 +40,7 @@ nnoremap <leader>sv :source $MYVIMRC<cr>
 map <BS> \
 map <BS><BS> \\
 nnoremap <leader>mv :tab split<CR>
+nmap <leader>tn :tabnew<cr>
 nnoremap * m`:keepjumps normal! *``<cr>
 syntax on
 set colorcolumn=80

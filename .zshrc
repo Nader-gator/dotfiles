@@ -1,6 +1,6 @@
 source ~/.profile
 export LANG=en_US.UTF-8
-  export EDITOR='nvim'
+export EDITOR='nvim'
 mcr(){
   gcc $1 && ./a.out
 }
@@ -14,13 +14,24 @@ se(){
 source ~/Code_stuff/Enviroments/$1/bin/activate
 }
 install_lib(){
-    ve
-    cd libs/
-    ./reinstall-library.sh
-    ve
-    docker-compose restart
-    sc
-    docker-compose restart
+    ve && \
+    cd libs/vero_grpc_lib && \
+    ./compile.sh && \
+    ve && \
+    cd libs/ && \
+    ./reinstall-library.sh 
+}
+
+install_lib_re(){
+    ve && \
+    ggel && \
+    ve && \
+    cd libs/ && \
+    ./reinstall-library.sh && \
+    ve && \
+    docker-compose restart && \
+    sc && \
+    docker-compose restart && \
 
 
 }
@@ -64,6 +75,18 @@ exec_reinstall(){
     docker exec $1 sh -c "cd /vero/libs/ && ./reinstall-library.sh"
 }
 
+up(){
+    docker-compose -f docker-compose.override.yml up -d $1
+}
+stop(){
+    docker-compose -f docker-compose.override.yml stop $1
+}
+restart(){
+    docker-compose -f docker-compose.override.yml restart $1
+}
+down(){
+    docker-compose -f docker-compose.override.yml down
+}
 [ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] \
     && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
 # added by travis gem

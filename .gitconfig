@@ -10,7 +10,7 @@
 	required = true
 [core]
 	editor = nvim -u ~/.vimrclite
-	excludesfile = /Users/naderarbabian/.gitignore_global
+	excludesfile = /Users/naderarbabian/.global_ignore
 [difftool "sourcetree"]
 	cmd = opendiff \"$LOCAL\" \"$REMOTE\"
 	path = 
