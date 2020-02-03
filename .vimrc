@@ -148,6 +148,8 @@ call plug#begin()
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
         "config {{{
+        let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+        let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
         nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
         nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
         nmap <leader>git :call Fzf_git_diff_files_with_dev_icons()<CR>
@@ -157,8 +159,6 @@ call plug#begin()
         nmap <leader>ft :Tags<cr>|     "fuzzy find text in the working directory
         nmap <leader>fc :Commands<cr>| "fuzzy find Vim commands (like Ctrl-Shift-P in Sublime/Atom/VSC)
         nmap <leader>fg :Ag<cr>
-        let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
-        let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
         let g:fzf_action = {
           \ 'ctrl-t': 'tab split',
           \ 'ctrl-s': 'split',
@@ -323,6 +323,16 @@ set scrolloff=1
     nmap <leader>wd 1<C-g>
     nnoremap <leader>mv :tab split<CR>
     nnoremap <expr> <leader>fa &foldlevel ? 'zM' :'zR'
+    "command line movement {{{
+        cnoremap <C-w> <S-Right>
+        cnoremap <C-b> <S-Left>
+        cnoremap <c-h> <left>
+        cnoremap <c-j> <down>
+        cnoremap <c-k> <up>
+        cnoremap <c-l> <right>
+        cnoremap ^ <home>
+        cnoremap $ <end>
+    "}}}
     "window navigation {{{
         nnoremap <C-h> <C-w>h
         nnoremap <C-j> <C-w>j
@@ -330,21 +340,33 @@ set scrolloff=1
         nnoremap <C-l> <C-w>l
     "}}}
     "copy/pasting/pasting {{{
-        "deleting pasting
-        nnoremap d "ad
-        vnoremap d "ad
-        nnoremap dd "add
-        nnoremap <leader>pp "ap
-        "Copy to clipboard
-        vnoremap  y  "+y
-        nnoremap  Y  "+yg_
-        nnoremap  y  "+y
-        nnoremap  yy  "+yy
-        "Paste from clipboard
-        nnoremap p "+p
-        nnoremap P "+P
-        vnoremap p "+p
-        vnoremap P "+P
+            "Copy to clipboard
+            vnoremap  <leader>y  "+y
+            nnoremap  <leader>Y  "+yg_
+            nnoremap  <leader>y  "+y
+            nnoremap  <leader>yy  "+yy
+            "Paste from clipboard
+            nnoremap <leader>p "+p
+            nnoremap <leader>P "+P
+            vnoremap <leader>p "+p
+            vnoremap <leader>P "+P
+        "disabled {{{
+            " "deleting pasting
+            " nnoremap d "ad
+            " vnoremap d "ad
+            " nnoremap dd "add
+            " nnoremap <leader>pp "ap
+            " "Copy to clipboard
+            " vnoremap  y  "+y
+            " nnoremap  Y  "+yg_
+            " nnoremap  y  "+y
+            " nnoremap  yy  "+yy
+            " "Paste from clipboard
+            " nnoremap p "+p
+            " nnoremap P "+P
+            " vnoremap p "+p
+            " vnoremap P "+P
+        "}}}
     "}}}
     "floating menu nav {{{
         inoremap <expr> <C-j> pumvisible() ? "\<C-n>": "\<C-j>"
@@ -466,6 +488,9 @@ endif
 "function definitions {{{
 "FZF optiona and DEVICON function {{{
 "normal search {{{
+let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
 function! FloatingFZF()
   let buf = nvim_create_buf(v:false, v:true)
   call setbufvar(buf, '&signcolumn', 'no')
@@ -572,3 +597,5 @@ function! s:show_documentation()
 endfunction
 "}}}
 "}}}
+nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>

@@ -21,9 +21,16 @@ call plug#begin()
     Plug 'morhetz/gruvbox'
 call plug#end()
 colorscheme gruvbox
-nmap <leader>q <Plug>(easymotion-bd-w)
 nmap <leader>n :e .temp.md<Cr>
-let g:EasyMotion_keys='edcrfvtgbyhnujm'
+
+cnoremap <C-w> <S-Right>
+cnoremap <C-b> <S-Left>
+cnoremap <c-h> <left>
+cnoremap <c-j> <down>
+cnoremap <c-k> <up>
+cnoremap <c-l> <right>
+cnoremap ^ <home>
+cnoremap $ <end>
 
 " set lines=40 
 " set columns=1000
@@ -54,40 +61,18 @@ nnoremap <Space> :noh<cr>
 nmap Q :q<cr>
 nmap ]w :w<cr>
 
-" set clipboard=unnamed
-nnoremap d "ad
-vnoremap d "ad
-nnoremap dd "add
-nnoremap <leader>pp "ap
-
-" Copy to clipboard
-vnoremap  y  "+y
-nnoremap  Y  "+yg_
-nnoremap  y  "+y
-nnoremap  yy  "+yy
-
-" " Paste from clipboard
-nnoremap p "+p
-nnoremap P "+P
-vnoremap p "+p
-vnoremap P "+P
-
+"Copy to clipboard
+vnoremap  <leader>y  "+y
+nnoremap  <leader>Y  "+yg_
+nnoremap  <leader>y  "+y
+nnoremap  <leader>yy  "+yy
+"Paste from clipboard
+nnoremap <leader>p "+p
+nnoremap <leader>P "+P
+vnoremap <leader>p "+p
+vnoremap <leader>P "+P
 
 nnoremap <C-h> <C-w>h
 nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
-
-"iterative mapping {{{
-let i = 1
-while i <= 20
-    execute 'nnoremap <Leader>' . i . '<Space>' . ' :' . i . 'wincmd w<CR>'
-    execute 'nnoremap ]' . i . '<Space> ' .  i . 'gt'
-    execute 'nmap <Leader>di' . i . '<Space>' .
-                \ ' :let buffno=bufnr("%")<cr>' .
-                \ ':let linepos=line(".")<cr>:let colpos=col(".")<cr> :' . i .
-                \ 'wincmd w<cr>:execute("buffer ".buffno)<cr>:call cursor(linepos,colpos)<cr>' .
-                \ ' <Plug>(coc-definition)'
-    let i = i + 1
-endwhile
-"}}}
