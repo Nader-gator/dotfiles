@@ -29,8 +29,8 @@ cnoremap <c-h> <left>
 cnoremap <c-j> <down>
 cnoremap <c-k> <up>
 cnoremap <c-l> <right>
-cnoremap ^ <home>
-cnoremap $ <end>
+cnoremap <c-b> <home>
+cnoremap <c-e> <end>
 
 " set lines=40 
 " set columns=1000
@@ -43,7 +43,7 @@ set fileignorecase
 set wildignorecase
 set ignorecase
 nnoremap <leader>v :e ~/.vimrclite<cr>
-nnoremap <leader>sv :source $MYVIMRC<cr>
+nnoremap <leader>sv :source ~/.vimrclite<cr>
 map <BS> \
 map <BS><BS> \\
 nnoremap <leader>mv :tab split<CR>

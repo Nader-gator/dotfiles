@@ -19,7 +19,7 @@ install_lib(){
     ./compile.sh && \
     ve && \
     cd libs/ && \
-    ./reinstall-library.sh 
+    ./reinstall-library.sh
 }
 
 install_lib_re(){
@@ -76,16 +76,19 @@ exec_reinstall(){
 }
 
 up(){
-    docker-compose -f docker-compose.override.yml up -d $1
+    docker-compose -f docker-compose.override.yml up -d "$@"
 }
 stop(){
-    docker-compose -f docker-compose.override.yml stop $1
+    docker-compose -f docker-compose.override.yml stop "$@"
 }
 restart(){
-    docker-compose -f docker-compose.override.yml restart $1
+    docker-compose -f docker-compose.override.yml restart "$@"
 }
 down(){
     docker-compose -f docker-compose.override.yml down
+}
+dps(){
+    docker-compose -f docker-compose.override.yml ps
 }
 [ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] \
     && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"

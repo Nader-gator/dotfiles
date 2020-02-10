@@ -26,7 +26,6 @@ endif
 "}}}
 "Plugins {{{
 call plug#begin()
-
 " Plug 'klen/rope-vim'
 ">>> UI
     Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
@@ -140,6 +139,10 @@ call plug#begin()
         map <C-q> <Plug>(easymotion-prefix)
         "}}}
     Plug 'wesQ3/vim-windowswap'
+        "config {{{
+        autocmd VimEnter * nunmap <leader>yw
+        autocmd VimEnter * nunmap <leader>pw
+        "}}}
     "disabled {{{
     "Plug 'terryma/vim-multiple-cursors'
     "}}}
@@ -173,12 +176,6 @@ call plug#begin()
         let g:user_emmet_mode='i'
         autocmd FileType html,css EmmetInstall
         "}}}
-    Plug 'vimlab/split-term.vim'
-        "config {{{
-        nmap <leader>ts :Term<cr>
-        nmap <leader>tv :VTerm<cr>
-        nmap <leader>tt :TTerm<cr>
-        "}}}
     Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
         "config {{{
         autocmd Filetype tex setl updatetime=1
@@ -208,7 +205,12 @@ call plug#begin()
         "}}}
     Plug 'tpope/vim-eunuch' "TODO: look up quickfix window for Cfind
     Plug 'tpope/vim-surround'
+    Plug 'nader-gator/vim-http-client'
+        "config {{{
+        let g:http_client_json_ft = 'json'
+        "}}}
     "disabled {{{
+    "Plug 'vimlab/split-term.vim'
     "Plug 'jeetsukumaran/vim-pythonsense' TODO: find replacement
     "Plug 'brooth/far.vim' TODO: find replacement
     "Plug 'vim-scripts/LineJuggler' | Plug 'inkarkat/vim-ingo-library'
@@ -230,15 +232,25 @@ call plug#begin()
         "config {{{
         nmap <leader>dd <Plug>DashSearch
         "}}}
-    Plug 'cohama/lexima.vim' "auto close brackets TODO: figure some stuff out
+    Plug 'Raimondi/delimitMate'
         "config {{{
-        nmap <leader>pt :let b:lexima_disabled = get(b:, 'lexima_disabled', 1)<cr>
+        nmap <silent> <leader>dt :DelimitMateSwitch<cr>
+        let delimitMate_expand_cr = 2
+        let delimitMate_expand_space = 1
+        let delimitMate_expand_inside_quotes = 1
+        let delimitMate_jump_expansion = 1
+        let delimitMate_balance_matchpairs = 1
+        let delimitMate_excluded_regions = ""
         "}}}
     Plug 'alvan/vim-closetag' "auto close html tags with >>
     Plug 'tmhedberg/SimpylFold' "folding for python
     Plug 'Konfekt/FastFold'
     Plug 'tpope/vim-repeat'
     "disabled {{{
+    "Plug 'cohama/lexima.vim'
+        "config {{{
+        " nmap <leader>pt :let b:lexima_disabled = get(b:, 'lexima_disabled', 1)<cr>
+        "}}}
     "Plug 'tpope/vim-sensible'
     "Plug 'ryvnf/readline.vim'
     "}}}
@@ -259,8 +271,8 @@ call plug#begin()
 call plug#end()
 "post plug commands {{{
     "vim-airline/vim-airline {{{
-    call airline#add_statusline_func('WindowNumber')
-    call airline#add_inactive_statusline_func('WindowNumber')
+    autocmd VimEnter * call airline#add_statusline_func('WindowNumber')
+    autocmd VimEnter * call airline#add_inactive_statusline_func('WindowNumber')
     "}}}
 "}}}
 "}}}
@@ -272,7 +284,6 @@ set splitbelow
 set splitright
 set mouse=a
 set fileignorecase
-set wildignorecase
 syntax on
 " colorscheme onedark
 colorscheme gruvbox
@@ -284,11 +295,12 @@ set signcolumn=yes| "always show signcolumns (coc)
 set ignorecase
 set number relativenumber
 "tabs
-    filetype plugin indent on
     set expandtab
     set tabstop=4
     set softtabstop=4
     set shiftwidth=4
+    set autoindent
+    set smartindent
 "}}}
 "sensible stuff {{{
 filetype plugin indent on
@@ -311,38 +323,41 @@ set scrolloff=1
 "}}}
 "key mappings {{{
     "simple maps {{{
-    nnoremap <leader>v :e ~/.vimrc<cr>
-    nnoremap <leader>sv :source $MYVIMRC<cr>
-    nmap <BS> \
-    nmap <BS><BS> \\
-    nnoremap * m`:keepjumps normal! *``<cr>
-    nnoremap <Space> :noh<cr>
-    nmap <leader>tn :tabnew<cr>
-    nmap Q :q<cr>
-    nmap ]w :w<cr>
-    nmap <leader>wd 1<C-g>
-    nnoremap <leader>mv :tab split<CR>
-    nnoremap <expr> <leader>fa &foldlevel ? 'zM' :'zR'
+        nnoremap <leader>v :e ~/.vimrc<cr>
+        nnoremap <leader>sv :source $MYVIMRC<cr>
+        nmap <BS> \
+        nmap <BS><BS> \\
+        nnoremap * m`:keepjumps normal! *``<cr>
+        nnoremap <Space> :noh<cr>
+        nmap <leader>tn :tabnew<cr>
+        nmap Q :q<cr>
+        nmap ]w :w<cr>
+        nmap <leader>wd 1<C-g>
+        nnoremap <leader>tb :tab split<CR>
+        nnoremap <expr> <leader>fa &foldlevel ? 'zM' :'zR'
+    "}}}
     "command line movement {{{
         cnoremap <C-w> <S-Right>
         cnoremap <C-b> <S-Left>
-        cnoremap <c-h> <left>
-        cnoremap <c-j> <down>
-        cnoremap <c-k> <up>
-        cnoremap <c-l> <right>
-        cnoremap ^ <home>
-        cnoremap $ <end>
+        cnoremap <C-h> <left>
+        cnoremap <C-j> <down>
+        cnoremap <C-k> <up>
+        cnoremap <C-l> <right>
+        cnoremap <C-b> <home>
+        cnoremap <C-e> <end>
     "}}}
     "window navigation {{{
         nnoremap <C-h> <C-w>h
         nnoremap <C-j> <C-w>j
         nnoremap <C-k> <C-w>k
         nnoremap <C-l> <C-w>l
+        nnoremap <A-l> gt
+        nnoremap <A-h> gT
     "}}}
     "copy/pasting/pasting {{{
             "Copy to clipboard
             vnoremap  <leader>y  "+y
-            nnoremap  <leader>Y  "+yg_
+            nnoremap  <leader>Y  "+Y
             nnoremap  <leader>y  "+y
             nnoremap  <leader>yy  "+yy
             "Paste from clipboard
@@ -372,10 +387,19 @@ set scrolloff=1
         inoremap <expr> <C-j> pumvisible() ? "\<C-n>": "\<C-j>"
         inoremap <expr> <C-k> pumvisible() ? "\<C-p>": "\<C-k>"
     "}}}
+    "Terminal {{{
+        nmap <leader>ts :new term://zsh<cr>A
+        nmap <leader>tv :vnew term://zsh<cr>A
+        nmap <leader>tt :tabnew term://zsh<cr>A
+        tnoremap <C-]> <C-\><C-n>
+    "}}}
+    "adding newline {{{
+        nnoremap <silent> <A-j> :<C-u>call append(line("."),   repeat([""], v:count1))<CR>
+        nnoremap <silent> <A-k> :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
     "}}}
     "function calls {{{
-    nnoremap <leader>zz :call VCenterCursor()<CR>
-    xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+        nnoremap <leader>zz :call VCenterCursor()<CR>
+        xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
     "}}}
 "}}}
 "language specific mapping {{{
@@ -395,7 +419,7 @@ set scrolloff=1
     "Rust{{{
     autocmd FileType rust call SetRustlang()
     function! SetRustlang()
-        nmap <leader>mm :w \|!rustc % && %:r<cr>
+        nmap <leader>mm :w \|!cargo run<cr>
     endfunction
     "
     "}}}
@@ -446,6 +470,13 @@ set scrolloff=1
         IndentLinesDisable
     endfunction
     "}}}
+    "HTTP {{{
+    autocmd BufNew,Bufread *.http call SetHTTP()
+    function! SetHTTP()
+        set filetype=http
+        noremap <leader>hh :HTTPClientDoRequest<cr>
+    endfunction
+    "}}}
     ".env files{{{
     autocmd BufNew,BufRead .env* set filetype=sh
     "}}}
@@ -488,9 +519,6 @@ endif
 "function definitions {{{
 "FZF optiona and DEVICON function {{{
 "normal search {{{
-let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
-let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-
 function! FloatingFZF()
   let buf = nvim_create_buf(v:false, v:true)
   call setbufvar(buf, '&signcolumn', 'no')
@@ -597,5 +625,5 @@ function! s:show_documentation()
 endfunction
 "}}}
 "}}}
-nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
-nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+" nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
+" nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
