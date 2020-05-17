@@ -26,22 +26,20 @@ endif
 "}}}
 "Plugins {{{
 call plug#begin()
-" Plug 'klen/rope-vim'
-">>> UI
+">>> UI {{{
+    Plug 'mhinz/vim-startify'
     Plug 'scrooloose/nerdtree', { 'on': 'NERDTreeToggle' }
         "config {{{
         nmap <leader>nt :NERDTreeToggle<cr>
         let NERDTreeMapOpenSplit='s'
         let NERDTreeMapActivateNode='l'
         let NERDTreeMapOpenVSplit='v'
-        nmap <Leader>r :NERDTreeRefreshRoot<cr>
         "}}}
-    Plug 'mhinz/vim-startify'
     "disabled {{{
     "Plug 'mhinz/vim-grepper'
     "}}}
-
-">>> syntax and autofill
+" }}}
+">>> syntax and autofill {{{
     Plug 'dense-analysis/ale'
         "config :TODO fix linting situation {{{
         nmap <leader>fd :let b:ale_fix_on_save = 0<cr>
@@ -67,57 +65,61 @@ call plug#begin()
         nmap <leader>dv :vsplit<cr> :ALEGoToDefinition<cr>zz
 		nnoremap <leader>doc :ALEHover<CR>
         "}}}
-    Plug 'neoclide/coc.nvim', {'do': { -> coc#util#install()}}
+    Plug 'neoclide/coc.nvim', {'branch': 'release'}
         "config {{{
 		nnoremap <leader>ho :call <SID>show_documentation()<CR>
         let g:coc_global_extensions = [
           \ 'coc-emoji', 'coc-prettier',
           \ 'coc-tsserver', 'coc-tslint', 'coc-tslint-plugin',
-          \ 'coc-css', 'coc-json', 'coc-pyls', 'coc-yaml','coc-snippets','coc-highlight',
-          \ 'coc-emmet','CppSnippets','coc-solargraph','coc-python','coc-html','coc-rls',
-          \ 'https://github.com/one-harsh/vscode-cpp-snippets',
+          \ 'coc-css', 'coc-json', 'coc-pyls', 'coc-yaml',"coc-snippets","coc-highlight",
+          \ 'coc-emmet',"coc-solargraph","coc-python","coc-html","coc-rls",
+          \ 'https://github.com/one-harsh/vscode-cpp-snippets',"coc-snippets"
           \]
         " }}}
     Plug 'frazrepo/vim-rainbow'
         "config {{{
-        let g:rainbow_active = 1
+        let rainbowftToIgnore = ['nerdtree','lazydocker','term']
+        " has to be after syntax on to work, 40kb is roughly 1000 lines
+        autocmd FileType * if index(rainbowftToIgnore ,&ft) < 0
+                    \&& line2byte(line("$") + 1) < 40000 |:call rainbow#load()| endif
         " }}}
     Plug 'sheerun/vim-polyglot'
         "config {{{
-        " let g:polyglot_disabled = ['python-indent']
+        let g:polyglot_disabled = ['python-indent']
         "}}}
     "disabled {{{
     "Plug 'vim-python/python-syntax'
     "Plug 'Nader-gator/vim-polyglot'
     "Plug 'andymass/vim-matchup'
     "}}}
-
-">>> Themses and visual
-    Plug 'vim-airline/vim-airline-themes'
+"}}}
+" >>> Themses and visual {{{
+    " Plug 'vim-airline/vim-airline-themes'
     Plug 'vim-airline/vim-airline'
-        "config {{{
-        "WindowNumber (for airline) {{{
+        " config {{{
+        " WindowNumber (for airline) {{{
         function! WindowNumber(...)
             let builder = a:1
             let context = a:2
             call builder.add_section('airline_c', '%{tabpagewinnr(tabpagenr())}')
             return 0
         endfunction
-        "}}}
+        " }}}
         let g:airline#extensions#tabline#enabled = 1
         let g:airline_powerline_fonts = 1
         let g:airline#extensions#tabline#show_tab_nr = 1
         let g:airline#extensions#tabline#formatter = 'unique_tail'
-        let g:airline#extensions#branch#enabled = 1
-        let g:airline#extensions#hunks#enabled = 1
+        let g:airline#extensions#branch#enabled = 0
+        let g:airline#extensions#hunks#enabled = 0
         let g:airline_section_b = '%{strftime("%H:%M")}'
-    "}}}
+        " }}}
     Plug 'Yggdroot/indentLine' "adds lines in indents
-        "config {{{
+        " config {{{
+        let g:indentLine_newVersion=0
         let g:indentLine_char_list = ['│']
         let g:indentLine_leadingSpaceEnabled = 1
         let g:indentLine_leadingSpaceChar = '·'
-        let g:indentLine_fileTypeExclude = ['markdown','nerdtree']
+        let g:indentLine_fileTypeExclude = ['markdown','nerdtree', '']
         autocmd FileType nerdtree IndentLinesDisable
         "}}}
     Plug 'junegunn/goyo.vim'
@@ -127,17 +129,17 @@ call plug#begin()
     " Plug 'joshdick/onedark.vim'
     Plug 'morhetz/gruvbox'
     Plug 'ryanoasis/vim-devicons' "MAYBE, 4 ms startup
-    "disabled {{{
-    "Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle' }
-    "Plug 'TaDaa/vimade'
-    "}}}
+    " disabled {{{
+     "Plug 'tiagofumo/vim-nerdtree-syntax-highlight', { 'on': 'NERDTreeToggle' }
+     ""
 
-">>> Motion and navigation
-    Plug 'easymotion/vim-easymotion'
-        "config {{{
-        let g:EasyMotion_keys='edcrfvtgbyhnujm'
-        map <C-q> <Plug>(easymotion-prefix)
-        "}}}
+     "
+     "
+     "Plug 'TaDaa/vimade'
+     "}}}
+ " }}}
+">>> Motion and navigation {{{
+    Plug 'justinmk/vim-sneak'
     Plug 'wesQ3/vim-windowswap'
         "config {{{
         autocmd VimEnter * nunmap <leader>yw
@@ -145,16 +147,23 @@ call plug#begin()
         "}}}
     "disabled {{{
     "Plug 'terryma/vim-multiple-cursors'
+    "Plug 'easymotion/vim-easymotion'
+        " config {{{
+        " let g:EasyMotion_keys='edcrfvtgbyhnujm'
+        " map <leader>q <Plug>(easymotion-prefix)
+        " }}}
     "}}}
-
-">>> ease of use
+" }}}
+ ">>> ease of use {{{
     Plug 'junegunn/fzf', { 'dir': '~/.fzf', 'do': './install --all' }
     Plug 'junegunn/fzf.vim'
         "config {{{
-        let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
-        let $FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
-        nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,0)<CR>
-        nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_DEFAULT_COMMAND,1)<CR>
+        " let $FZF_DEFAULT_COMMAND='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+        let $FZF_SPEFICAL_CMD='ag -l --path-to-ignore ~/.ignore --nocolor --hidden -g ""'
+        let $FZF_CTRL_T_COMMAND="$FZF_SPEFICAL_CMD"
+        let $FZF_DEFAULT_OPTS='--layout=reverse'
+        nmap <leader>fj :call Fzf_files_with_dev_icons($FZF_SPEFICAL_CMD,0)<CR>
+        nmap <leader>ff :call Fzf_files_with_dev_icons($FZF_SPEFICAL_CMD,1)<CR>
         nmap <leader>git :call Fzf_git_diff_files_with_dev_icons()<CR>
         nmap <C-f> :Files<cr>|    "fuzzy find files in the working directory (where you launched Vim from)
         nmap <leader>fl :Lines<cr>|   "fuzzy find lines in the current file
@@ -168,13 +177,6 @@ call plug#begin()
           \ 'ctrl-v': 'vsplit' }
         command! -bang -nargs=+ -complete=dir Rag call fzf#vim#ag_raw(<q-args>, {'options': '--delimiter : --nth 4..'}, <bang>0)
         " let g:fzf_layout = { 'window': 'call FloatingFZF()' }
-        "}}}
-    Plug 'mattn/emmet-vim'
-        "config {{{
-        let g:user_emmet_leader_key=','
-        let g:user_emmet_install_global = 0
-        let g:user_emmet_mode='i'
-        autocmd FileType html,css EmmetInstall
         "}}}
     Plug 'xuhdev/vim-latex-live-preview', { 'for': 'tex' }
         "config {{{
@@ -192,22 +194,23 @@ call plug#begin()
         nmap <C-c> gcc
         "}}}
     Plug 'gu-fan/colorv.vim', {'on': 'ColorVEdit'}
-        "config {{{
+        " config {{{
         nmap <leader>ec :ColorVEdit<cr>
-        "}}}
+        " }}}
     Plug 'FooSoft/vim-argwrap'
         "config {{{
         nnoremap <leader>aw :ArgWrap<CR>
         "}}}
-    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install', 'for': 'markdown'  }
-        "config {{{
+    Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app & yarn install' }
+        " config {{{
         let g:mkdp_auto_close = 0
-        "}}}
+        " }}}
     Plug 'tpope/vim-eunuch' "TODO: look up quickfix window for Cfind
     Plug 'tpope/vim-surround'
     Plug 'nader-gator/vim-http-client'
         "config {{{
         let g:http_client_json_ft = 'json'
+        let g:http_client_bind_hotkey = 0
         "}}}
     "disabled {{{
     "Plug 'vimlab/split-term.vim'
@@ -216,9 +219,16 @@ call plug#begin()
     "Plug 'vim-scripts/LineJuggler' | Plug 'inkarkat/vim-ingo-library'
     "Plug 'scrooloose/nerdcommenter'
     "Plug 'vim-scripts/greplace.vim'
+    " Plug 'mattn/emmet-vim'
+    "     "config {{{
+    "     let g:user_emmet_leader_key=','
+    "     let g:user_emmet_install_global = 0
+    "     let g:user_emmet_mode='i'
+    "     autocmd FileType html,css EmmetInstall
+    "     "}}}
     "}}}
-
-">>> invisible help
+ "}}}
+">>> invisible help {{{
     Plug 'ianding1/leetcode.vim'
         "config {{{
         let g:leetcode_solution_filetype='python'
@@ -228,13 +238,9 @@ call plug#begin()
         "config {{{
         let g:EditorConfig_exclude_patterns = ['fugitive://.\*', 'scp://.\*']
         "}}}
-    Plug 'rizzatti/dash.vim'
-        "config {{{
-        nmap <leader>dd <Plug>DashSearch
-        "}}}
     Plug 'Raimondi/delimitMate'
         "config {{{
-        nmap <silent> <leader>dt :DelimitMateSwitch<cr>
+        nmap <silent> <leader>bt :DelimitMateSwitch<cr>
         let delimitMate_expand_cr = 2
         let delimitMate_expand_space = 1
         let delimitMate_expand_inside_quotes = 1
@@ -253,9 +259,13 @@ call plug#begin()
         "}}}
     "Plug 'tpope/vim-sensible'
     "Plug 'ryvnf/readline.vim'
+    "Plug 'rizzatti/dash.vim'
+    "     "config {{{
+    "     nmap <leader>da <Plug>DashSearch
+    "     "}}}
     "}}}
-
-">>> Git
+"}}}
+">>> Git {{{
     Plug 'airblade/vim-gitgutter'
         "config {{{
         nmap <leader>ggt :GitGutterToggle<cr>
@@ -267,12 +277,12 @@ call plug#begin()
     "disabled {{{
     "Plug 'tpope/vim-fugitive'
     "}}}
-
+"}}}
 call plug#end()
 "post plug commands {{{
     "vim-airline/vim-airline {{{
-    autocmd VimEnter * call airline#add_statusline_func('WindowNumber')
-    autocmd VimEnter * call airline#add_inactive_statusline_func('WindowNumber')
+    " autocmd VimEnter * call airline#add_statusline_func('WindowNumber')
+    " autocmd VimEnter * call airline#add_inactive_statusline_func('WindowNumber')
     "}}}
 "}}}
 "}}}
@@ -294,6 +304,8 @@ set shortmess+=c | "don't give |ins-completion-menu| messages. (coc)
 set signcolumn=yes| "always show signcolumns (coc)
 set ignorecase
 set number relativenumber
+set undofile
+set undodir=~/.vim/undodir
 "tabs
     set expandtab
     set tabstop=4
@@ -305,10 +317,10 @@ set number relativenumber
 "sensible stuff {{{
 filetype plugin indent on
 set modeline
-set foldmethod=syntax
 set foldlevel=99
 set display+=lastline
 set autoindent
+set foldmethod=indent
 set backspace=start,eol ",indent
 set complete-=i "C- P and N
 set nrformats-=octal "inc num C-a, decrease C-x
@@ -319,7 +331,7 @@ set synmaxcol=500
 set laststatus=2
 set ruler
 set wildmenu
-set scrolloff=1
+set scrolloff=0
 "}}}
 "key mappings {{{
     "simple maps {{{
@@ -333,8 +345,12 @@ set scrolloff=1
         nmap Q :q<cr>
         nmap ]w :w<cr>
         nmap <leader>wd 1<C-g>
-        nnoremap <leader>tb :tab split<CR>
+        nnoremap <leader>tc :tab split<CR>
         nnoremap <expr> <leader>fa &foldlevel ? 'zM' :'zR'
+        inoremap <C-l> <Del>
+        nnoremap <silent> <C-p> o<C-r>"<esc>k
+        nnoremap <silent> <C-[> O<C-r>"<esc>j
+        nnoremap <leader>bb :Buffers<cr>
     "}}}
     "command line movement {{{
         cnoremap <C-w> <S-Right>
@@ -351,20 +367,21 @@ set scrolloff=1
         nnoremap <C-j> <C-w>j
         nnoremap <C-k> <C-w>k
         nnoremap <C-l> <C-w>l
-        nnoremap <A-l> gt
-        nnoremap <A-h> gT
+        nnoremap <C-m> gt
+        nnoremap <C-n> gT
     "}}}
     "copy/pasting/pasting {{{
             "Copy to clipboard
-            vnoremap  <leader>y  "+y
-            nnoremap  <leader>Y  "+Y
-            nnoremap  <leader>y  "+y
-            nnoremap  <leader>yy  "+yy
+            nnoremap  Y  "+Y
+            vnoremap  y  "+y
+            nnoremap  y  "+y
+            nnoremap  yy  "+yy
             "Paste from clipboard
-            nnoremap <leader>p "+p
-            nnoremap <leader>P "+P
-            vnoremap <leader>p "+p
-            vnoremap <leader>P "+P
+            nnoremap P "+P
+            vnoremap P "+P
+            nnoremap p "+p
+            vnoremap p "+p
+            nnoremap <leader>p p
         "disabled {{{
             " "deleting pasting
             " nnoremap d "ad
@@ -388,18 +405,34 @@ set scrolloff=1
         inoremap <expr> <C-k> pumvisible() ? "\<C-p>": "\<C-k>"
     "}}}
     "Terminal {{{
-        nmap <leader>ts :new term://zsh<cr>A
-        nmap <leader>tv :vnew term://zsh<cr>A
-        nmap <leader>tt :tabnew term://zsh<cr>A
+        nmap <silent><leader>ts :new term://zsh<cr>
+        nmap <silent><leader>tv :vnew term://zsh<cr>
+        nmap <silent><leader>tt :tabnew term://zsh<cr>
         tnoremap <C-]> <C-\><C-n>
+        autocmd BufWinEnter,WinEnter * if &buftype == 'terminal' | call SetTerm() | endif
+        function! SetTerm()
+            call rainbow#inactivate()
+            setlocal bufhidden=hide
+            nmap <buffer><silent><leader>bk :bd!<cr>
+            nmap <buffer>Q :q<cr>:echo "process sent to background"<cr>
+        endfunction
+        autocmd TermOpen * startinsert
+        autocmd TermOpen * setlocal listchars= nonumber norelativenumber
     "}}}
     "adding newline {{{
-        nnoremap <silent> <A-j> :<C-u>call append(line("."),   repeat([""], v:count1))<CR>
-        nnoremap <silent> <A-k> :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
+        nnoremap <silent> <A-d> :<C-u>call append(line("."),   repeat([""], v:count1))<CR>
+        nnoremap <silent> <A-u> :<C-u>call append(line(".")-1, repeat([""], v:count1))<CR>
     "}}}
     "function calls {{{
         nnoremap <leader>zz :call VCenterCursor()<CR>
         xnoremap @ :<C-u>call ExecuteMacroOverVisualRange()<CR>
+        nmap <leader>dd :call ToggleLazyDocker()<cr>
+        nmap <leader>bdd :call ToggleLazyDockerBackground()<cr>
+    "}}}
+    "workspace mapping {{{
+        if stridx(getcwd(), "Code_stuff/vero") != -1
+            nnoremap <silent><leader>gp :!cd ~/Code_stuff/vero/libs/vero_grpc_lib;./compile.sh<cr>
+        endif
     "}}}
 "}}}
 "language specific mapping {{{
@@ -419,7 +452,11 @@ set scrolloff=1
     "Rust{{{
     autocmd FileType rust call SetRustlang()
     function! SetRustlang()
-        nmap <leader>mm :w \|!cargo run<cr>
+        if @% == 'src/lib.rs' |
+            nmap <leader>mm :w \|!cargo check<cr>
+            | else |
+            nmap <leader>mm :w \|!cargo run<cr>
+            | endif
     endfunction
     "
     "}}}
@@ -431,10 +468,10 @@ set scrolloff=1
     "
     "}}}
     "Python{{{
-    autocmd FileType python call SetPythonOptions()
-    function! SetPythonOptions()
+    autocmd FileType python call SetPython()
+    function! SetPython()
         nmap <leader>db  obreakpoint(context=10)<esc>
-        nmap <leader>pc o"""<cr><esc>O
+        nmap <leader>cc o""""""""<esc>hhi<cr>
         nmap <leader>mp :w \|! mypy %<cr>
         nmap <leader>mm :w \|! python3 %<cr>
         set nofoldenable
@@ -474,8 +511,17 @@ set scrolloff=1
     autocmd BufNew,Bufread *.http call SetHTTP()
     function! SetHTTP()
         set filetype=http
-        noremap <leader>hh :HTTPClientDoRequest<cr>
+        set foldmethod=marker
+        silent! nnoremap <buffer><Leader>mm :HTTPClientDoRequest<cr>
     endfunction
+    "Big fikes {{{
+    " 1mb
+    autocmd BufNew,Bufread * if getfsize(expand(@%)) > 1000000 ||
+                \(line2byte(line("$") + 1) / line("$")) > 500 | call SetBigFile()
+    function! SetBigFile()
+        " setlocal syntax=OFF
+    endfunction
+    "}}}
     "}}}
     ".env files{{{
     autocmd BufNew,BufRead .env* set filetype=sh
@@ -484,11 +530,20 @@ set scrolloff=1
 "autocommands {{{
 augroup numbertoggle
 autocmd!
-let ftToIgnore = ['nerdtree', 'startify']
-autocmd BufEnter,FocusGained,InsertLeave * if index(ftToIgnore,&ft) < 0|:set relativenumber
+let ftToIgnore = ['nerdtree', 'startify', 'lazydocker', 'term']
+autocmd BufEnter,FocusGained,InsertLeave * if index(ftToIgnore,&ft) < 0 |:set relativenumber
 autocmd BufLeave,FocusLost,InsertEnter * if index(ftToIgnore,&ft) < 0|:set norelativenumber
+autocmd FileType nerdtree set relativenumber
+" fucks with markdown preview for some reason
+" autocmd BufEnter,FocusGained,InsertLeave * if &buftype == 'terminal' |:set norelativenumber
+autocmd BufLeave,FocusLost,InsertEnter * if  &buftype == 'terminal' |:set norelativenumber
 augroup END
 au BufReadPost *.html set filetype=html
+autocmd Filetype lazydocker set norelativenumber
+autocmd Filetype lazydocker tmap <silent><buffer>Q <C-\><C-n> Q
+file
+let syntaxFoldft = ['python', 'rust']
+autocmd Filetype * if index(ftToIgnore,&ft) > 0 |:set foldmethod=syntax
 "}}}
 "iterative mapping {{{
 let i = 1
@@ -506,14 +561,12 @@ endwhile
 "commands {{{
 command! -bang -bar -nargs=? -complete=file E :call s:MKDir(<f-args>) | e<bang> <args>
 "}}}
-"gui related configs {{{
-if (empty($TMUX))
-  if (has("nvim"))
-    let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-  endif
-  if (has("termguicolors"))
-    set termguicolors
-  endif
+" "gui related configs {{{
+if (has("nvim"))
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+endif
+if (has("termguicolors"))
+set termguicolors
 endif
 "}}}
 "function definitions {{{
@@ -523,13 +576,15 @@ function! FloatingFZF()
   let buf = nvim_create_buf(v:false, v:true)
   call setbufvar(buf, '&signcolumn', 'no')
 
-  let height = &lines - 3
-  let width = float2nr(&columns - (&columns * 2 / 10))
+  " let row = &lines * 80
+  let row = &lines * 0.2
+  let height = float2nr(&lines - (row * 1.3))
+  let width = float2nr(&columns - (&columns * 3 / 10))
   let col = float2nr((&columns - width) / 2)
 
   let opts = {
         \ 'relative': 'editor',
-        \ 'row': 1,
+        \ 'row': row,
         \ 'col': col,
         \ 'width': width,
         \ 'height': height
@@ -624,6 +679,66 @@ function! s:show_documentation()
   endif
 endfunction
 "}}}
+
+"lazy docker{{{
+function! CreateCenteredFloatingWindow()
+    let width = float2nr(&columns * 0.8)
+    let height = float2nr(&lines * 0.9)
+    let top = ((&lines - height) / 2) - 1
+    let left = (&columns - width) / 2
+    let opts = {'relative': 'editor', 'row': top, 'col': left, 'width': width, 'height': height, 'style': 'minimal'}
+
+    let top = "╭" . repeat("─", width - 2) . "╮"
+    let mid = "│" . repeat(" ", width - 2) . "│"
+    let bot = "╰" . repeat("─", width - 2) . "╯"
+    let lines = [top] + repeat([mid], height - 2) + [bot]
+    let s:buf = nvim_create_buf(v:false, v:true)
+    call nvim_buf_set_lines(s:buf, 0, -1, v:true, lines)
+    call nvim_open_win(s:buf, v:true, opts)
+    set winhl=Normal:Floating
+    let opts.row += 1
+    let opts.height -= 2
+    let opts.col += 2
+    let opts.width -= 4
+    call nvim_open_win(nvim_create_buf(v:false, v:true), v:true, opts)
+    autocmd BufWipeout <buffer> exe 'bwipeout '.s:buf
+endfunction
+function! ToggleTerm(cmd)
+    if empty(bufname(a:cmd))
+        call CreateCenteredFloatingWindow()
+        call termopen(a:cmd, { 'on_exit': function('OnTermExit') })
+        set filetype=lazydocker
+        startinsert
+    else
+        call ToggleLazyDockerBackground()
+    endif
+endfunction
+function! ToggleLazyDocker()
+    call ToggleTerm('lazydocker')
+endfunction
+function! ToggleLazyDockerBackground()
+    if empty(bufname('lazydocker'))
+        tabnew
+        term lazydocker
+        set filetype=lazydocker
+        file lazydocker
+    else
+        call CreateCenteredFloatingWindow()
+        buf lazydocker
+        startinsert
+        set filetype=lazydocker
+        nmap <silent><buffer>Q :q<cr>:q<cr>
+    endif
+endfunction
+function! OnTermExit(job_id, code, event)
+    if a:code == 0
+        bwipeout!
+    endif
+endfunction
+
+"}}}
 "}}}
 " nnoremap <silent> <Leader>+ :exe "resize " . (winheight(0) * 3/2)<CR>
 " nnoremap <silent> <Leader>- :exe "resize " . (winheight(0) * 2/3)<CR>
+" :set autoread | au CursorHold * checktime | call feedkeys("G")
+" autocmd BufWinEnter,WinEnter * if &buftype == 'terminal' | call SetTerm() | endif

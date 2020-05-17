@@ -2,7 +2,7 @@ source ~/.profile
 export LANG=en_US.UTF-8
 export EDITOR='nvim'
 mcr(){
-  gcc $1 && ./a.out
+  gcc -g -o a.out "$1" && ./a.out $2
 }
 count_lines(){
 cat $(find . -name $1) | grep -E -v '^\s*$|^\s*#' | wc -l
@@ -110,3 +110,6 @@ plugins=(
 source "${ZDOTDIR:-$HOME}/.zprezto/init.zsh"
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 unalias rm
+alias lzd='lazydocker'
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+fpath+=${ZDOTDIR:-~}/.zsh_functions

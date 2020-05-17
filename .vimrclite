@@ -19,6 +19,7 @@ call plug#begin()
         nmap <leader>fg :Ag<cr>
         "}}}
     Plug 'morhetz/gruvbox'
+    Plug 'iamcco/markdown-preview.nvim', { 'do': { -> mkdp#util#install() } }
 call plug#end()
 colorscheme gruvbox
 nmap <leader>n :e .temp.md<Cr>
@@ -32,7 +33,7 @@ cnoremap <c-l> <right>
 cnoremap <c-b> <home>
 cnoremap <c-e> <end>
 
-" set lines=40 
+" set lines=40
 " set columns=1000
 imap jj <Esc>
 highlight CursorLineNr guifg=#e28409
